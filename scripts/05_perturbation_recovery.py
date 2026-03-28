@@ -20,6 +20,7 @@ Step 5: 护理扰动恢复分析 (探索性)
 
 输出:
   data/perturbation_events.parquet   -- 每个有效 Turn 事件的 AUC_recovery
+  output/tableS7_perturbation_summary.csv -- 患者对级别统计汇总表
   output/fig3_recovery.png           -- 扰动恢复叠加图
 
 用法: python scripts/05_perturbation_recovery.py
@@ -44,6 +45,7 @@ DB_PATH      = PROJECT_ROOT / "mimiciv" / "mimiciv.db"
 COHORT_PATH  = PROJECT_ROOT / "data" / "cohort.parquet"
 EVENTS_PATH  = PROJECT_ROOT / "data" / "perturbation_events.parquet"
 OUTPUT_DIR   = PROJECT_ROOT / "output"
+SUMMARY_PATH = OUTPUT_DIR / "tableS7_perturbation_summary.csv"
 
 TURN_ITEMID      = 224082
 MAP_ITEMIDS      = (220052, 220181)     # ABPm, NBPm
@@ -276,61 +278,137 @@ def patient_auc(events: pd.DataFrame,
                   .reset_index())
 
 
-def analyze(events: pd.DataFrame, label: str = "全队列") -> None:
+def summarize_analysis(events: pd.DataFrame, label: str) -> tuple[pd.DataFrame, dict]:
+    """汇总患者对级别 Step 5 统计，返回 (summary_table, p_values)."""
+    pt_early = patient_auc(events, *PERIODS["early"])
+    pt_late  = patient_auc(events, *PERIODS["late"])
+
+    rows = []
+    pvals = {
+        "label": label,
+        "within_shock_p": np.nan,
+        "within_control_p": np.nan,
+        "late_shock_vs_control_p": np.nan,
+    }
+
+    for grp in ["shock", "control"]:
+        e = pt_early[pt_early["group"] == grp]["auc_recovery"]
+        l = pt_late[pt_late["group"]  == grp]["auc_recovery"]
+        p = stats.ranksums(e, l).pvalue if len(e) >= 5 and len(l) >= 5 else np.nan
+        if grp == "shock":
+            pvals["within_shock_p"] = p
+        else:
+            pvals["within_control_p"] = p
+
+        rows.append({
+            "Analysis": label,
+            "Group": grp,
+            "Comparison": "early vs late",
+            "n_early_pairs": int(len(e)),
+            "n_late_pairs": int(len(l)),
+            "early_auc_median": float(e.median()) if len(e) else np.nan,
+            "early_auc_q1": float(e.quantile(.25)) if len(e) else np.nan,
+            "early_auc_q3": float(e.quantile(.75)) if len(e) else np.nan,
+            "late_auc_median": float(l.median()) if len(l) else np.nan,
+            "late_auc_q1": float(l.quantile(.25)) if len(l) else np.nan,
+            "late_auc_q3": float(l.quantile(.75)) if len(l) else np.nan,
+            "p_value": float(p) if not np.isnan(p) else np.nan,
+        })
+
+    s_late = pt_late[pt_late["group"] == "shock"]["auc_recovery"]
+    c_late = pt_late[pt_late["group"] == "control"]["auc_recovery"]
+    p_sc = stats.ranksums(s_late, c_late).pvalue if len(s_late) >= 5 and len(c_late) >= 5 else np.nan
+    pvals["late_shock_vs_control_p"] = p_sc
+    rows.append({
+        "Analysis": label,
+        "Group": "shock_vs_control",
+        "Comparison": "late shock vs control",
+        "n_early_pairs": np.nan,
+        "n_late_pairs": int(len(s_late) + len(c_late)),
+        "early_auc_median": np.nan,
+        "early_auc_q1": np.nan,
+        "early_auc_q3": np.nan,
+        "late_auc_median": float(s_late.median()) if len(s_late) else np.nan,
+        "late_auc_q1": float(c_late.median()) if len(c_late) else np.nan,
+        "late_auc_q3": np.nan,
+        "p_value": float(p_sc) if not np.isnan(p_sc) else np.nan,
+        "n_shock_late_pairs": int(len(s_late)),
+        "n_control_late_pairs": int(len(c_late)),
+    })
+
+    raw_e = events[(events["hours_before_T0"] >= PERIODS["early"][0]) &
+                   (events["hours_before_T0"] <  PERIODS["early"][1])]
+    raw_l = events[(events["hours_before_T0"] >= PERIODS["late"][0]) &
+                   (events["hours_before_T0"] <  PERIODS["late"][1])]
+    for grp in ["shock", "control"]:
+        rows.append({
+            "Analysis": label,
+            "Group": grp,
+            "Comparison": "raw_event_counts",
+            "n_early_pairs": int(len(raw_e[raw_e["group"] == grp])),
+            "n_late_pairs": int(len(raw_l[raw_l["group"] == grp])),
+            "early_auc_median": np.nan,
+            "early_auc_q1": np.nan,
+            "early_auc_q3": np.nan,
+            "late_auc_median": np.nan,
+            "late_auc_q1": np.nan,
+            "late_auc_q3": np.nan,
+            "p_value": np.nan,
+        })
+
+    return pd.DataFrame(rows), pvals
+
+
+def analyze(events: pd.DataFrame, label: str = "全队列") -> tuple[pd.DataFrame, dict]:
     """
     比较 early vs late 时段的 AUC_recovery。
     Fix 4: 先聚合至 (stay_id, T0) 患者对中位数，再做两样本非配对
     Wilcoxon rank-sum 检验（stats.ranksums）。
     """
     print(f"\n── {label} ──────────────────────────────────────────────────────")
-
-    pt_early = patient_auc(events, *PERIODS["early"])
-    pt_late  = patient_auc(events, *PERIODS["late"])
+    summary, pvals = summarize_analysis(events, label)
 
     for grp in ["shock", "control"]:
-        e = pt_early[pt_early["group"] == grp]["auc_recovery"]
-        l = pt_late[pt_late["group"]  == grp]["auc_recovery"]
+        row = summary[(summary["Group"] == grp) & (summary["Comparison"] == "early vs late")].iloc[0]
+        e_n = int(row["n_early_pairs"])
+        l_n = int(row["n_late_pairs"])
+        p = row["p_value"]
 
-        if len(e) >= 5 and len(l) >= 5:
-            stat, p = stats.ranksums(e, l)
-        else:
-            stat, p = np.nan, np.nan
-
-        print(f"  {grp} (患者对级别 n_early={len(e)}, n_late={len(l)}):")
-        if len(e) >= 1:
-            print(f"    early  AUC={e.median():.2f} "
-                  f"[IQR {e.quantile(.25):.2f}–{e.quantile(.75):.2f}]")
-        if len(l) >= 1:
-            print(f"    late   AUC={l.median():.2f} "
-                  f"[IQR {l.quantile(.25):.2f}–{l.quantile(.75):.2f}]")
+        print(f"  {grp} (患者对级别 n_early={e_n}, n_late={l_n}):")
+        if e_n >= 1:
+            print(f"    early  AUC={row['early_auc_median']:.2f} "
+                  f"[IQR {row['early_auc_q1']:.2f}–{row['early_auc_q3']:.2f}]")
+        if l_n >= 1:
+            print(f"    late   AUC={row['late_auc_median']:.2f} "
+                  f"[IQR {row['late_auc_q1']:.2f}–{row['late_auc_q3']:.2f}]")
         if not np.isnan(p):
             print(f"    early vs late: Wilcoxon rank-sum (unpaired) p={p:.4f}")
 
-    # shock vs control 在 late 时段
-    s_late = pt_late[pt_late["group"] == "shock"]["auc_recovery"]
-    c_late = pt_late[pt_late["group"] == "control"]["auc_recovery"]
-    if len(s_late) >= 5 and len(c_late) >= 5:
-        _, p_sc = stats.ranksums(s_late, c_late)
+    p_sc = pvals["late_shock_vs_control_p"]
+    late_row = summary[(summary["Group"] == "shock_vs_control") &
+                       (summary["Comparison"] == "late shock vs control")].iloc[0]
+    if not np.isnan(p_sc):
         print(f"\n  Late 时段 shock vs control (患者对中位数): "
-              f"Wilcoxon rank-sum (unpaired) p={p_sc:.4f}  n=({len(s_late)},{len(c_late)})")
+              f"Wilcoxon rank-sum (unpaired) p={p_sc:.4f}  "
+              f"n=({int(late_row['n_shock_late_pairs'])},{int(late_row['n_control_late_pairs'])})")
 
     # 补充: 原始事件级别统计 (仅供参考，不作为主要结果)
     print(f"\n  [参考] 原始事件级别 (n_events):")
-    raw_e = events[(events["hours_before_T0"] >= PERIODS["early"][0]) &
-                   (events["hours_before_T0"] <  PERIODS["early"][1])]
-    raw_l = events[(events["hours_before_T0"] >= PERIODS["late"][0]) &
-                   (events["hours_before_T0"] <  PERIODS["late"][1])]
     for grp in ["shock", "control"]:
-        e_raw = raw_e[raw_e["group"] == grp]["auc_recovery"]
-        l_raw = raw_l[raw_l["group"] == grp]["auc_recovery"]
-        print(f"    {grp}: early n={len(e_raw)}, late n={len(l_raw)}")
+        raw_row = summary[(summary["Group"] == grp) &
+                          (summary["Comparison"] == "raw_event_counts")].iloc[0]
+        print(f"    {grp}: early n={int(raw_row['n_early_pairs'])}, "
+              f"late n={int(raw_row['n_late_pairs'])}")
+
+    return summary, pvals
 
 
 # ── 图表 ───────────────────────────────────────────────────────────────────────
 
 def fig3_recovery(events: pd.DataFrame,
                   map_all: pd.DataFrame,
-                  path: Path) -> None:
+                  path: Path,
+                  pvals: dict | None = None) -> None:
     """Figure 3: 以 Turn 为零点对齐的平均 MAP 恢复曲线。"""
     map_all["charttime"] = pd.to_datetime(map_all["charttime"])
     events["turn_time"]  = pd.to_datetime(events["turn_time"])
@@ -402,10 +480,36 @@ def fig3_recovery(events: pd.DataFrame,
         ax.legend(fontsize=8)
 
     axes[0].set_ylabel("MAP deviation from baseline (mmHg)", fontsize=10)
+
+    if pvals is None:
+        pvals = {}
+    within_p = pvals.get("within_shock_p", np.nan)
+    between_p = pvals.get("late_shock_vs_control_p", np.nan)
+    p_annotations = {
+        "shock":   f"Within-group (late vs early): p = {within_p:.3f}\n"
+                   f"Between-group (late window): p = {between_p:.3f}",
+        "control": f"Between-group (late window): p = {between_p:.3f}",
+    }
+    for ax, grp in zip(axes, ["shock", "control"]):
+        ax.text(
+            0.03, 0.97, p_annotations[grp],
+            transform=ax.transAxes,
+            fontsize=7.5,
+            verticalalignment="top",
+            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7),
+        )
+
     plt.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
+    print(f"  saved → {path.name}")
+
+
+def export_summary_table(tbl: pd.DataFrame, path: Path) -> None:
+    """导出 Step 5 统计汇总表，便于审计。"""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tbl.to_csv(path, index=False, encoding="utf-8-sig")
     print(f"  saved → {path.name}")
 
 
@@ -479,17 +583,21 @@ def main() -> None:
 
     # ── 4. 统计分析 ────────────────────────────────────────────────────────
     print("\n── 统计分析 ─────────────────────────────────────────────────────")
-    analyze(events, "全队列")
+    tbl_all, pvals_all = analyze(events, "全队列")
 
     no_vaso = events[~events["has_vasopressor"]]
+    summary_tables = [tbl_all]
     if len(no_vaso) >= 20:
-        analyze(no_vaso, "策略B: 无升压药亚组")
+        tbl_no_vaso, _ = analyze(no_vaso, "策略B: 无升压药亚组")
+        summary_tables.append(tbl_no_vaso)
     else:
         print(f"\n  [WARN] 无升压药亚组事件太少 (n={len(no_vaso)})，跳过")
 
+    export_summary_table(pd.concat(summary_tables, ignore_index=True), SUMMARY_PATH)
+
     # ── 5. 出图 ────────────────────────────────────────────────────────────
     print("\n── 出图 ─────────────────────────────────────────────────────────")
-    fig3_recovery(events, map_all, OUTPUT_DIR / "fig3_recovery.png")
+    fig3_recovery(events, map_all, OUTPUT_DIR / "fig3_recovery.png", pvals=pvals_all)
 
     print("\n[完成]")
     print(f"  {EVENTS_PATH}")

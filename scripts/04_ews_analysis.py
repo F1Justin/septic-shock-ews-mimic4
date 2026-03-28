@@ -345,13 +345,16 @@ def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
             ci = 1.96 * sub["sem"]
             ax.plot(x, y, color=COLORS[grp], label=grp, linewidth=1.8)
             ax.fill_between(x, y - ci, y + ci, color=COLORS[grp], alpha=0.2)
-        ax.axvline(0, color="grey", linestyle="--", linewidth=0.8)
-        ax.axvline(EARLY_WINDOW_HI, color="green", linestyle=":", linewidth=0.8, alpha=0.7)
-        ax.axvline(LATE_WINDOW_LO, color="orange", linestyle=":", linewidth=0.8, alpha=0.7)
+        ax.axvline(0, color="grey", linestyle="--", linewidth=1.2)
+        ax.axvline(EARLY_WINDOW_HI, color="green", linestyle=":", linewidth=1.2, alpha=0.9)
+        ax.axvline(LATE_WINDOW_LO, color="orange", linestyle=":", linewidth=1.2, alpha=0.9)
         ax.set_ylabel(ylabel, fontsize=10)
 
     axes[1].set_xlabel("Hours before T0", fontsize=10)
     axes[0].legend(fontsize=9)
+    # ensure T0 (x=0) and the reference lines at -24 h / -12 h are fully visible
+    for ax in axes:
+        ax.set_xlim(right=0)
     plt.tight_layout()
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -359,29 +362,38 @@ def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
 
 
 def fig2_delta_boxplot(stats_df: pd.DataFrame, path: Path) -> None:
-    """Early-to-late change 的箱线图。"""
-    plot_rows = []
-    for grp, sub in stats_df.groupby("group"):
-        for col, label in [("delta_map", "Variance-MAP"), ("delta_hr", "AC1-HR")]:
+    """Early-to-late change 的箱线图：两个指标使用独立子图和 y 轴。"""
+    metrics = [
+        ("delta_map", "Variance-MAP", "Late − Early\nMAP variance"),
+        ("delta_hr",  "AC1-HR",       "Late − Early\nHR AC1"),
+    ]
+    fig, axes = plt.subplots(1, 2, figsize=(9, 5))
+    fig.suptitle("Figure 2: Early-to-late indicator change", fontsize=12)
+
+    for ax, (col, title, ylabel) in zip(axes, metrics):
+        plot_rows = []
+        for grp, sub in stats_df.groupby("group"):
             for v in sub[col].dropna():
-                plot_rows.append({"group": grp, "indicator": label, "delta": v})
-    df = pd.DataFrame(plot_rows)
-    fig, ax = plt.subplots(figsize=(7, 5))
-    sns.boxplot(
-        data=df,
-        x="indicator",
-        y="delta",
-        hue="group",
-        palette=COLORS,
-        width=0.5,
-        fliersize=2,
-        ax=ax,
-    )
-    ax.axhline(0, color="grey", linestyle="--", linewidth=0.8)
-    ax.set_xlabel("Indicator", fontsize=10)
-    ax.set_ylabel("Late - Early change", fontsize=10)
-    ax.set_title("Figure 2: Early-to-late indicator change", fontsize=12)
-    ax.legend(title="Group", fontsize=9)
+                plot_rows.append({"group": grp, "delta": v})
+        df = pd.DataFrame(plot_rows)
+        if df.empty:
+            ax.set_visible(False)
+            continue
+        sns.boxplot(
+            data=df,
+            x="group",
+            y="delta",
+            palette=COLORS,
+            order=["control", "shock"],
+            width=0.5,
+            fliersize=2,
+            ax=ax,
+        )
+        ax.axhline(0, color="grey", linestyle="--", linewidth=0.8)
+        ax.set_xlabel("Group", fontsize=10)
+        ax.set_ylabel(ylabel, fontsize=10)
+        ax.set_title(title, fontsize=11)
+
     plt.tight_layout()
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)

@@ -1,0 +1,11 @@
+﻿Analysis,Group,Comparison,n_early_pairs,n_late_pairs,early_auc_median,early_auc_q1,early_auc_q3,late_auc_median,late_auc_q1,late_auc_q3,p_value,n_shock_late_pairs,n_control_late_pairs
+全队列,shock,early vs late,41.0,40,124.99999999999993,67.5,145.0,178.0,52.5,287.125,0.2731790471988449,,
+全队列,control,early vs late,81.0,39,106.5,48.0,206.25,90.0,18.0,205.5,0.3882106118102868,,
+全队列,shock_vs_control,late shock vs control,,79,,,,178.0,90.0,,0.10996588377714507,40.0,39.0
+全队列,shock,raw_event_counts,57.0,53,,,,,,,,,
+全队列,control,raw_event_counts,120.0,54,,,,,,,,,
+策略B: 无升压药亚组,shock,early vs late,32.0,33,125.62499999999997,73.72916666666667,144.81249999999997,187.5,66.0,310.0,0.12634725184637585,,
+策略B: 无升压药亚组,control,early vs late,70.0,36,105.75,49.125,210.0,93.75,20.25,196.5,0.4509476692143143,,
+策略B: 无升压药亚组,shock_vs_control,late shock vs control,,69,,,,187.5,93.75,,0.05536590133001221,33.0,36.0
+策略B: 无升压药亚组,shock,raw_event_counts,44.0,42,,,,,,,,,
+策略B: 无升压药亚组,control,raw_event_counts,107.0,50,,,,,,,,,

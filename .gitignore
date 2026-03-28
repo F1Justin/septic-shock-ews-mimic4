@@ -23,6 +23,7 @@ output/old/
 *.toc
 *.bbl
 *.blg
+*.bib
 
 # ── Old zh version ──
 report_zh.*

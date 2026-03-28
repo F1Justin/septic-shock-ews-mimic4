@@ -53,82 +53,45 @@
 \begin{abstract}
 \noindent
 \textbf{Background.}
-Early-warning research in sepsis increasingly focuses on whether heart-rate dynamics become
-progressively less flexible before haemodynamic collapse.
-In hourly electronic health record (EHR) data, such changes may be more plausibly interpreted as
-\emph{physiological rigidity} than as a literal demonstration of high-frequency critical slowing down.
+Whether heart-rate dynamics become progressively less flexible before haemodynamic collapse
+is an active question in sepsis early-warning research.
+In hourly electronic health record (EHR) data, rising lag-1 autocorrelation (AC1) is more
+plausibly interpreted as \emph{physiological rigidity} than as a demonstration of
+high-frequency critical slowing down.
 
 \textbf{Methods.}
-From MIMIC-IV v3.1, we extracted 41,296 Sepsis-3 ICU stays.
-Septic shock was operationally defined as sustained vasopressor initiation with lactate
-$>$2\,mmol/L within $\pm$24\,h and at least 1\,L crystalloid in the preceding 24\,h
-(used as an operational lower bound to balance definition strictness against cohort size
-given the complexity of MIMIC-IV fluid records),
-yielding 10,310 shock stays.
-Before matching, we pre-screened candidate windows for analysability
-(at least 24 actual MAP and HR observations in the final 48\,h and at least 72\,h ICU observation
-to support a 24\,h burn-in period).
-Risk-set matching (1:2, admission SOFA $\pm$2) yielded 2,175 matched
-(stay, $T_0$) pairs; 2,172 remained analysable after preprocessing
+From MIMIC-IV v3.1, we identified 41,296 Sepsis-3 ICU stays; 10,310 met an operational
+septic shock definition (vasopressor plus lactate $>$2\,mmol/L plus $\geq$1\,L crystalloid).
+Risk-set matching (1:2, admission SOFA $\pm$2) yielded 2,172 analysable matched pairs
 (725 shock, 1,447 control).
-MAP and HR were extracted over 72\,h before $T_0$; the first 24\,h were used only as
-burn-in for a trailing-mean detrending step, and analyses were restricted to the final 48\,h.
-Rolling 12\,h variance (MAP) and lag-1 autocorrelation (HR AC1) were computed.
-Primary comparisons used early- and late-centred rolling-window summaries
-(windows indexed by their midpoint time; early centers $-48$ to $-24$\,h, late centers
-$-12$ to $<0$\,h, with realised late centers extending to $-5$\,h), plus a
-late-minus-early contrast, with stay-level clustered generalized estimating equations and
-global Holm correction across full-cohort and subgroup tests.
-Time-by-group interaction was additionally tested using linear mixed-effects models (LMM).
-Primary adjusted analysis used conditional logistic regression stratified by matched pair and
-adjusted for invasive ventilation, ICU type, monitoring modality, sedative exposure,
-and beta-blocker exposure.
+Rolling 12-h variance (MAP) and HR AC1 were computed over a 48-h pre-event window after
+a 24-h detrending burn-in.
+Primary comparisons used early- and late-centred window summaries with clustered GEE and
+global Holm correction; the primary adjusted analysis used conditional logistic regression
+stratified by matched pair and adjusted for ventilation, ICU type, monitoring modality,
+sedative, and beta-blocker exposure.
 
 \textbf{Results.}
-In the full cohort, HR AC1 was higher in shock during the late-centred window summary
-(0.382 vs.\ 0.323; clustered GEE $p<0.001$, Holm $p<0.001$),
-whereas the early-window difference was smaller
-(0.345 vs.\ 0.323; raw $p=0.0395$, Holm $p=0.3157$).
-The late-minus-early change in HR AC1 was 0.0356 in shock versus $-0.0018$ in controls
-(raw $p=0.0208$, Holm $p=0.1872$).
-The LMM time-by-group interaction for HR AC1 was positive in the full cohort
-($\beta=0.00143$, $p=0.0241$).
-In the primary conditional logistic model, the late-centred rolling-window HR AC1 summary remained associated with shock
-(OR\,=\,1.60, 95\,\%\,CI\,1.15--2.22, $p=0.005$).
-However, after additional adjustment for raw final-12\,h MAP and HR, the HR AC1 term was no
-longer significant (OR\,=\,1.23, 0.85--1.78, $p=0.271$).
-Early-window HR AC1 was not independently associated after adjustment for early-window raw MAP
-and HR (OR\,=\,1.12, 0.73--1.72, $p=0.612$), whereas the late-centred rolling-window HR AC1 summary remained associated
-when adjusted only for earlier raw MAP and HR (OR\,=\,1.48, 1.05--2.08, $p=0.025$).
-Sedative exposure in the prior 12\,h showed a strong independent association with shock
-(OR\,=\,4.70, 3.73--5.93, $p<0.001$).
-Standard logistic and GEE sensitivity analyses were concordant
-(adjusted OR\,=\,1.63 and 1.61, respectively; both $p=0.003$),
-and bootstrap 95\,\% confidence intervals excluded zero for the late-centred AC1 contrast,
-early-window AC1, and early-to-late AC1 change.
-In the no-sedation subgroup, the late-centred rolling-window HR AC1 summary was not significant
-(OR\,=\,1.07, 0.59--1.95, $p=0.815$).
-In a double-detrending sensitivity re-analysis, the late-centred matched conditional
-association attenuated to OR\,=\,1.29 (0.91--1.83, $p=0.159$).
-Variance-MAP showed no corrected late-centred-window difference in the full cohort.
-An exploratory perturbation-recovery analysis found no significant within-shock-group
-early-vs-late difference ($p = 0.303$) and no significant near-event shock--control
-difference ($p = 0.129$).
+HR AC1 was significantly elevated in shock in the late-centred window
+(0.382 vs.\ 0.323; Holm $p<0.001$) but not in the early window (Holm $p=0.316$).
+The LMM time-by-group interaction was positive ($\beta=0.00143$, $p=0.024$).
+In the primary conditional logistic model, late-centred HR AC1 remained associated with shock
+(OR\,=\,1.60, 95\,\%\,CI\,1.15--2.22, $p=0.005$); sedative exposure showed the strongest
+independent association (OR\,=\,4.70, 3.73--5.93, $p<0.001$).
+After additional adjustment for concurrent mean MAP and HR, the HR AC1 term was no longer
+significant (OR\,=\,1.23, 0.85--1.78, $p=0.271$).
+GEE and deduplicated-subset sensitivity analyses reproduced the primary estimate
+(OR\,=\,1.61 and 1.65, respectively).
+The association was absent in the no-sedation subgroup (OR\,=\,1.07, $p=0.815$) and
+attenuated under double detrending (OR\,=\,1.29, $p=0.159$).
+MAP variance showed no robust late-centred group difference.
 
 \textbf{Conclusions.}
-In a strictly pre-screened, late-onset septic shock cohort, HR AC1 rises modestly over time
-and is clearly elevated only in the near-event interval captured by the late-centred
-rolling-window summary.
-Its association persists after matching-aware adjustment for care-setting and drug covariates,
-but disappears after adjustment for raw final-12\,h MAP and HR, arguing against a strong claim
-of independent occult early warning.
-Taken together, the data are more consistent with HR AC1 as a quantitative marker of
-late physiological rigidity that co-evolves with overt haemodynamic deterioration,
-rather than as a clinically actionable silent-phase alarm.
-The negative early-window and no-sedation sensitivity analyses further argue against a
-strong claim of a robust sedation-free occult warning signal in this hourly EHR setting.
-The double-detrending sensitivity analysis also suggests that the adjusted association is
-not fully robust to more aggressive low-frequency trend removal.
+HR AC1 is elevated in the near-event phase of late-onset septic shock and remains
+significant after care-setting adjustment, but does not survive concurrent vital-sign
+adjustment.
+These findings support HR AC1 as a marker of late physiological rigidity co-evolving with
+haemodynamic deterioration, rather than as an independent occult early-warning signal.
 
 \noindent\textbf{Keywords:} late-onset septic shock, MIMIC-IV, critical slowing down,
 autocorrelation, early warning signal, physiological rigidity, conditional logistic regression.
@@ -157,10 +120,11 @@ also depend on whether a variable is \emph{regulated} (e.g.\ blood pressure) or 
 
 Khalil et al.\ \citeyearpar{khalil2025} demonstrated HR~AC1 as the primary significant
 CSD indicator in an ICU extubation-failure cohort.
-Legault et al.\ \citeyearpar{legault2024} found variance-class indicators most robust
-in data-sparse clinical settings.
-Liu and Chen \citeyearpar{liu2019} formalised Dynamic Network Biomarker theory,
-emphasising rising within-group variance near critical states.
+Legault et al.\ \citeyearpar{legault2024} found variance-class indicators more predictive
+than autocorrelation-based indices in a longitudinal hemodialysis cohort.
+Chen et al.\ \citeyearpar{chen2012} originally formalised Dynamic Network Biomarker (DNB)
+theory, which identifies tipping points via rising intra-module variance and correlation;
+Liu et al.\ \citeyearpar{liu2019} extended this to a single-sample landscape-DNB framework.
 
 MIMIC-IV \citep{johnson2023} offers an opportunity to test these frameworks at scale
 but presents unique challenges: vital signs are recorded at $\sim$1-hour intervals,
@@ -308,7 +272,7 @@ analyzable matched cohort ($725$ shock, $1{,}447$ control).
 Covariates: age, sex, race, admission SOFA, ICU length of stay, ICU type
 (first care unit), respiratory support before $T_0$, vasopressor use before
 $T_0$, hospital mortality, and monitoring modality.
-Continuous variables: Wilcoxon rank-sum test; summary as median [IQR].
+Continuous variables:  Wilcoxon rank-sum test; summary as median [IQR].
 Categorical variables: chi-square (Fisher's exact when expected cell count $<$5).
 Standardised mean difference (SMD) was computed for each variable
 (Cohen's $d$ for continuous; Austin--Stuart formula for binary \citeyearpar{austin2015}).
@@ -384,7 +348,7 @@ between-group comparisons used Wilcoxon rank-sum on patient-pair-median AUC.
 This analysis is designated exploratory.
 
 All analyses were performed in Python 3.14 (\texttt{pandas}, \texttt{numpy},
-\texttt{scipy}, \texttt{pymannkendall}, \texttt{statsmodels}, \texttt{seaborn}).
+\texttt{scipy}, \texttt{statsmodels}, \texttt{seaborn}).
 
 % ==============================================================
 \section{Results}
@@ -701,9 +665,9 @@ or fewer than two post-Turn recovery points, 703 valid Turn events were identifi
 (involving 351 patients / 364 matched pairs).
 The within-shock-group comparison between late ($-6$ to $0$\,h) and early
 ($-24$ to $-12$\,h) segments did not reach significance
-(median AUC 175.5 vs.\ 125.0\,mmHg$\cdot$min; Wilcoxon rank-sum $p = 0.303$),
+(median AUC 178.0 vs.\ 125.0\,mmHg$\cdot$min; Wilcoxon rank-sum $p = 0.273$),
 nor did the between-group comparison (shock vs.\ control in the late segment:
-$p = 0.129$; no-vasopressor subgroup: $p = 0.067$; see Figure~S1 in the Supplementary Material).
+$p = 0.110$; no-vasopressor subgroup: $p = 0.055$; see Figure~S1 in the Supplementary Material).
 This analysis is hypothesis-generating only and provides no evidence to support
 a physiological resilience interpretation at hourly EHR resolution.
 
@@ -802,9 +766,9 @@ than a truly robust bedside marker.
 
 \subsection{Perturbation-recovery: negative exploratory result}
 
-Under the corrected patient-pair-level aggregation design (Fix 4), neither the
-within-shock-group time comparison ($p = 0.303$) nor the between-group comparison
-($p = 0.129$) reached significance.
+Under the patient-pair-level aggregation design, neither the
+within-shock-group time comparison ($p = 0.273$) nor the between-group comparison
+($p = 0.110$) reached significance.
 This negative result is in contrast to earlier event-level analyses that used
 pseudo-replication; the corrected analysis is the definitive estimate.
 The perturbation-recovery analysis is therefore best viewed as a motivation for
@@ -936,6 +900,7 @@ MIMIC-IV is available via PhysioNet (\url{https://physionet.org/content/mimiciv/
 \IfFileExists{references.bib}{\bibliography{references}}{}
 
 % ── inline bibliography (fallback if no .bib file) ────────────
+\IfFileExists{references.bib}{}{%
 \begin{thebibliography}{99}
 
 \bibitem[Austin and Stuart, 2015]{austin2015}
@@ -974,29 +939,37 @@ MIMIC-IV, a freely accessible electronic health record dataset.
 \textit{Sci Data}. 2023;10:1.
 
 \bibitem[Khalil et al., 2025]{khalil2025}
-Khalil S, George SV, Liu P, et al.
-Critical slowing down as an early warning of extubation failure in the ICU.
-\textit{J Crit Care}. 2025 [in press].
+Khalil L, George SV, Brown KL, Ray S, Arridge S.
+Transitions in intensive care: investigating critical slowing down post extubation.
+\textit{PLoS ONE}. 2025;20(1):e0317211.
 
 \bibitem[Legault et al., 2024]{legault2024}
-Legault MA, Bhavani SV, Bhatt M, et al.
-Evaluating early warning signals of critical transitions in ICU vital signs.
-\textit{Nurs Open}. 2024;11(1):e162.
+Legault V, Pu Y, Weinans E, Cohen AA.
+Application of early warning signs to physiological contexts: a comparison of
+multivariate indices in patients on long-term hemodialysis.
+\textit{Front Netw Physiol}. 2024;4:1299162.
 
 \bibitem[Liang and Zeger, 1986]{liang1986}
 Liang K-Y, Zeger SL.
 Longitudinal data analysis using generalized linear models.
 \textit{Biometrika}. 1986;73(1):13--22.
 
-\bibitem[Liu and Chen, 2019]{liu2019}
-Liu R, Chen P.
-Quantifying critical transitions in clinical data.
-\textit{Front Neuroinfo}. 2019;4:1299162.
+\bibitem[Chen et al., 2012]{chen2012}
+Chen L, Liu R, Liu Z-P, Li M, Aihara K.
+Detecting early-warning signals for sudden deterioration of complex diseases
+by dynamical network biomarkers.
+\textit{Sci Rep}. 2012;2:342.
+
+\bibitem[Liu et al., 2019]{liu2019}
+Liu X, Chang X, Leng S, Tang H, Aihara K, Chen L.
+Detection for disease tipping points by landscape dynamic network biomarkers.
+\textit{Natl Sci Rev}. 2019;6(4):775--785.
 
 \bibitem[Rector et al., 2021]{rector2021}
-Rector MV, Bhavani SV, Bhatt M, et al.
-Regulated and effector variables in critical care: implications for resilience monitoring.
-\textit{J Crit Care}. 2021;65:36--42.
+Rector JL, Gijzel SMW, Van De Leemput IA, Van Meulen FB, Olde Rikkert MGM, Melis RJF.
+Dynamical indicators of resilience from physiological time series in geriatric inpatients:
+lessons learned.
+\textit{Exp Gerontol}. 2021;149:111341.
 
 \bibitem[Scheffer et al., 2009]{scheffer2009}
 Scheffer M, Bascompte J, Brock WA, et al.
@@ -1009,6 +982,7 @@ The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsi
 \textit{JAMA}. 2016;315(8):801--810.
 
 \end{thebibliography}
+}% end \IfFileExists fallback
 
 % ==============================================================
 \clearpage
@@ -1029,8 +1003,8 @@ The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsi
     Mean ($\pm$95\,\% CI) MAP deviation from baseline for shock (left)
     and control (right).
     Blue: early ($-24$ to $-12$\,h); red: late ($-6$ to $0$\,h).
-    Neither the within-shock-group late vs.\ early comparison ($p = 0.065$)
-    nor the between-group comparison ($p = 0.462$) was significant at patient-pair level.
+    Neither the within-shock-group late vs.\ early comparison ($p = 0.273$)
+    nor the between-group comparison ($p = 0.110$) was significant at patient-pair level.
     This analysis is designated exploratory; see Section~\ref{sec:res-perturbation}.
   }
   \label{fig:recovery}
