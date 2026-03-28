@@ -39,6 +39,9 @@ venv/
 # ── Runtime logs ──
 logs/
 
+# ── Local comparison / scratch directories ──
+remote_rerun_compare/
+
 # ── OS / editor ──
 .DS_Store
 .idea/

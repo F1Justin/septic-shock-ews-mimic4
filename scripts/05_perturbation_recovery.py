@@ -107,12 +107,17 @@ def extract_map_around_turns(con: duckdb.DuckDBPyConnection,
 
     itemids = ",".join(map(str, MAP_ITEMIDS))
     return con.execute(f"""
-        SELECT ce.stay_id, ce.charttime, ce.valuenum AS map_value
+        SELECT
+            ce.stay_id,
+            ce.charttime,
+            median(ce.valuenum) AS map_value
         FROM mimiciv_icu.chartevents ce
         INNER JOIN stay_windows sw ON ce.stay_id = sw.stay_id
         WHERE ce.itemid IN ({itemids})
           AND ce.valuenum IS NOT NULL
           AND ce.charttime BETWEEN sw.t_min AND sw.t_max
+        GROUP BY ce.stay_id, ce.charttime
+        ORDER BY ce.stay_id, ce.charttime
     """).df()
 
 
@@ -161,10 +166,13 @@ def compute_auc_recovery(turn_time: pd.Timestamp,
     if map_df.empty or "charttime" not in map_df.columns:
         return None
 
+    map_df = map_df.sort_values("charttime", kind="mergesort").reset_index(drop=True)
+
     T = pd.Timestamp(turn_time)
     ct = map_df["charttime"]
     baseline_win = map_df[(ct >= T - pd.Timedelta(minutes=BASELINE_MIN)) & (ct < T)]
     recovery_win = map_df[(ct >= T) & (ct <= T + pd.Timedelta(minutes=RECOVERY_MIN))]
+    recovery_win = recovery_win.sort_values("charttime", kind="mergesort").reset_index(drop=True)
 
     n_total = len(baseline_win) + len(recovery_win)
     if n_total < MIN_PTS or len(recovery_win) < 2:
@@ -202,6 +210,10 @@ def process_events(turns: pd.DataFrame,
     map_all["charttime"] = pd.to_datetime(map_all["charttime"])
     vaso_changes["vaso_change_time"] = pd.to_datetime(vaso_changes["vaso_change_time"])
     ned_df["turn_time"] = pd.to_datetime(ned_df["turn_time"])
+    turns = turns.sort_values(["stay_id", "T0", "turn_time"], kind="mergesort").reset_index(drop=True)
+    map_all = map_all.sort_values(["stay_id", "charttime"], kind="mergesort").reset_index(drop=True)
+    vaso_changes = vaso_changes.sort_values(["stay_id", "vaso_change_time"], kind="mergesort").reset_index(drop=True)
+    ned_df = ned_df.sort_values(["stay_id", "turn_time"], kind="mergesort").reset_index(drop=True)
 
     import bisect
     vaso_by_stay: dict[int, list] = {}
@@ -328,9 +340,11 @@ def summarize_analysis(events: pd.DataFrame, label: str) -> tuple[pd.DataFrame, 
         "early_auc_median": np.nan,
         "early_auc_q1": np.nan,
         "early_auc_q3": np.nan,
-        "late_auc_median": float(s_late.median()) if len(s_late) else np.nan,
-        "late_auc_q1": float(c_late.median()) if len(c_late) else np.nan,
+        "late_auc_median": np.nan,
+        "late_auc_q1": np.nan,
         "late_auc_q3": np.nan,
+        "shock_late_auc_median": float(s_late.median()) if len(s_late) else np.nan,
+        "control_late_auc_median": float(c_late.median()) if len(c_late) else np.nan,
         "p_value": float(p_sc) if not np.isnan(p_sc) else np.nan,
         "n_shock_late_pairs": int(len(s_late)),
         "n_control_late_pairs": int(len(c_late)),
@@ -509,6 +523,9 @@ def fig3_recovery(events: pd.DataFrame,
 def export_summary_table(tbl: pd.DataFrame, path: Path) -> None:
     """导出 Step 5 统计汇总表，便于审计。"""
     path.parent.mkdir(parents=True, exist_ok=True)
+    sort_cols = [c for c in ["Analysis", "Group", "Comparison"] if c in tbl.columns]
+    if sort_cols:
+        tbl = tbl.sort_values(sort_cols, kind="mergesort").reset_index(drop=True)
     tbl.to_csv(path, index=False, encoding="utf-8-sig")
     print(f"  saved → {path.name}")
 

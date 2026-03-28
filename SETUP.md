@@ -193,14 +193,20 @@ python scripts/05_perturbation_recovery.py
 - 当前稿件不将其作为主结果支柱
 
 当前正式结果：
-- 有效 Turn events: `703`
-- within-shock early vs late: `p=0.303`
-- late shock vs control: `p=0.129`
-- no-vasopressor subgroup: `p=0.067`
+- 有效 Turn events: `660`
+- 涉及 `330` 个 stay / `340` 个 `(stay_id, T0)` 配对
+- within-shock early vs late:
+  - median AUC `180.0` vs `127.6 mmHg·min`
+  - `p=0.075`
+- late shock vs control: `p=0.330`
+- no-vasopressor subgroup:
+  - within-shock early vs late: `p=0.016`
+  - late shock vs control: `p=0.062`
 
 输出：
 - `output/fig3_recovery.png`
-- 对应表格与中间数据见 `output/` / `data/`
+- `output/tableS7_perturbation_summary.csv`
+- `data/perturbation_events.parquet`
 
 ## Step 6: 基线表（Table 1）
 

@@ -376,7 +376,7 @@ FORMULA_COVAR_ONLY = f"binary_group ~ {PRIMARY_COVARS}"
 
 
 def fit_model(formula: str, data: pd.DataFrame,
-              label: str) -> sm.genmod.generalized_linear_model.GLMResultsWrapper:
+              label: str) -> object:
     log.info(f"Fitting [{label}]: {formula[:80]}...")
     model  = smf.logit(formula, data=data)
     result = model.fit(disp=False, maxiter=200)

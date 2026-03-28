@@ -1,11 +1,11 @@
-﻿Analysis,Group,Comparison,n_early_pairs,n_late_pairs,early_auc_median,early_auc_q1,early_auc_q3,late_auc_median,late_auc_q1,late_auc_q3,p_value,n_shock_late_pairs,n_control_late_pairs
-全队列,shock,early vs late,41.0,40,124.99999999999993,67.5,145.0,178.0,52.5,287.125,0.2731790471988449,,
-全队列,control,early vs late,81.0,39,106.5,48.0,206.25,90.0,18.0,205.5,0.3882106118102868,,
-全队列,shock_vs_control,late shock vs control,,79,,,,178.0,90.0,,0.10996588377714507,40.0,39.0
-全队列,shock,raw_event_counts,57.0,53,,,,,,,,,
-全队列,control,raw_event_counts,120.0,54,,,,,,,,,
-策略B: 无升压药亚组,shock,early vs late,32.0,33,125.62499999999997,73.72916666666667,144.81249999999997,187.5,66.0,310.0,0.12634725184637585,,
-策略B: 无升压药亚组,control,early vs late,70.0,36,105.75,49.125,210.0,93.75,20.25,196.5,0.4509476692143143,,
-策略B: 无升压药亚组,shock_vs_control,late shock vs control,,69,,,,187.5,93.75,,0.05536590133001221,33.0,36.0
-策略B: 无升压药亚组,shock,raw_event_counts,44.0,42,,,,,,,,,
-策略B: 无升压药亚组,control,raw_event_counts,107.0,50,,,,,,,,,
+﻿Analysis,Group,Comparison,n_early_pairs,n_late_pairs,early_auc_median,early_auc_q1,early_auc_q3,late_auc_median,late_auc_q1,late_auc_q3,p_value,shock_late_auc_median,control_late_auc_median,n_shock_late_pairs,n_control_late_pairs
+全队列,control,early vs late,78.0,33,120.0,61.25,236.25,138.0,70.0,234.375,0.8364348018009509,,,,
+全队列,control,raw_event_counts,115.0,47,,,,,,,,,,,
+全队列,shock,early vs late,40.0,38,127.625,71.56250000000003,152.4375,180.0,73.875,302.375,0.07517306570460648,,,,
+全队列,shock,raw_event_counts,55.0,50,,,,,,,,,,,
+全队列,shock_vs_control,late shock vs control,,71,,,,,,,0.3299748498753441,180.0,138.0,38.0,33.0
+策略B: 无升压药亚组,control,early vs late,67.0,32,120.0,66.25,253.125,137.75,69.375,226.21875,0.9463174977484472,,,,
+策略B: 无升压药亚组,control,raw_event_counts,102.0,45,,,,,,,,,,,
+策略B: 无升压药亚组,shock,early vs late,32.0,31,127.625,73.72916666666667,152.4375,192.0,128.75,331.25,0.01643743892623217,,,,
+策略B: 无升压药亚组,shock,raw_event_counts,43.0,39,,,,,,,,,,,
+策略B: 无升压药亚组,shock_vs_control,late shock vs control,,63,,,,,,,0.06151844308314133,192.0,137.75,31.0,32.0
