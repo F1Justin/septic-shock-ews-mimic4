@@ -1,0 +1,25 @@
+﻿Variable,OR (95% CI),P,Model
+"HR AC1, early-centred window mean †",1.04 (0.71–1.51),0.847,Early-window AC1 adjusted for early raw MAP/HR
+Early-window MAP mean (raw),0.96 (0.95–0.97),<0.001,Early-window AC1 adjusted for early raw MAP/HR
+Early-window HR mean (raw),1.02 (1.01–1.03),<0.001,Early-window AC1 adjusted for early raw MAP/HR
+Invasive MV at -12h,0.70 (0.54–0.90),0.005,Early-window AC1 adjusted for early raw MAP/HR
+Sedation exposure in prior 12h,5.10 (3.99–6.50),<0.001,Early-window AC1 adjusted for early raw MAP/HR
+Beta-blocker exposure in prior 12h,0.74 (0.48–1.13),0.163,Early-window AC1 adjusted for early raw MAP/HR
+ICU type: SICU vs MICU,0.83 (0.63–1.09),0.173,Early-window AC1 adjusted for early raw MAP/HR
+ICU type: CCU/CSRU vs MICU,1.45 (1.07–1.97),0.016,Early-window AC1 adjusted for early raw MAP/HR
+ICU type: Neuro/NICU vs MICU,0.49 (0.25–0.96),0.037,Early-window AC1 adjusted for early raw MAP/HR
+ICU type: Other vs MICU,0.94 (0.47–1.88),0.864,Early-window AC1 adjusted for early raw MAP/HR
+Monitoring: ABP vs NBP,0.97 (0.75–1.25),0.818,Early-window AC1 adjusted for early raw MAP/HR
+Monitoring: Mixed vs NBP,1.11 (0.78–1.60),0.560,Early-window AC1 adjusted for early raw MAP/HR
+"HR AC1, late-centred window mean †",1.16 (0.80–1.68),0.428,Late-window AC1 adjusted for early raw MAP/HR
+Early-window MAP mean (raw),0.96 (0.95–0.97),<0.001,Late-window AC1 adjusted for early raw MAP/HR
+Early-window HR mean (raw),1.02 (1.01–1.02),<0.001,Late-window AC1 adjusted for early raw MAP/HR
+Invasive MV at -12h,0.69 (0.54–0.89),0.004,Late-window AC1 adjusted for early raw MAP/HR
+Sedation exposure in prior 12h,5.14 (4.03–6.55),<0.001,Late-window AC1 adjusted for early raw MAP/HR
+Beta-blocker exposure in prior 12h,0.72 (0.47–1.10),0.131,Late-window AC1 adjusted for early raw MAP/HR
+ICU type: SICU vs MICU,0.82 (0.62–1.07),0.140,Late-window AC1 adjusted for early raw MAP/HR
+ICU type: CCU/CSRU vs MICU,1.44 (1.07–1.95),0.017,Late-window AC1 adjusted for early raw MAP/HR
+ICU type: Neuro/NICU vs MICU,0.46 (0.24–0.89),0.022,Late-window AC1 adjusted for early raw MAP/HR
+ICU type: Other vs MICU,0.92 (0.46–1.85),0.825,Late-window AC1 adjusted for early raw MAP/HR
+Monitoring: ABP vs NBP,0.96 (0.74–1.24),0.757,Late-window AC1 adjusted for early raw MAP/HR
+Monitoring: Mixed vs NBP,1.10 (0.77–1.58),0.592,Late-window AC1 adjusted for early raw MAP/HR

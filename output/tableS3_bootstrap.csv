@@ -1,0 +1,4 @@
+﻿Statistic,Observed Δ,Bootstrap 95% CI,CI excludes 0
+Δ Late-window AC1-HR mean,0.0589,"[0.0331, 0.0862]",Yes
+Δ Early-window AC1-HR mean,0.0221,"[0.0033, 0.0465]",Yes
+Δ Early-to-late AC1-HR change,0.0374,"[0.0041, 0.0647]",Yes

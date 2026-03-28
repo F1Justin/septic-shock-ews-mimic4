@@ -1,0 +1,6 @@
+﻿Model,Predictor,Extra covariates,N observations,Informative strata,Log-likelihood,Note
+Primary conditional logistic,ac1_hr_late_mean,None,"2,059",695,-614.5,Matched-pair strata condition out matching variables and baseline hazard.
+Late-vitals-adjusted sensitivity,ac1_hr_late_mean,"late_map_mean_raw, late_hr_mean_raw","2,041",691,-494.9,Additionally adjusts for raw late-window mean MAP and HR.
+Early-window independence,ac1_hr_early_mean,"early_map_mean_raw, early_hr_mean_raw","2,048",693,-575.7,Early-window AC1 adjusted for raw early-window mean MAP and HR.
+Late AC1 adjusted for early vitals,ac1_hr_late_mean,"early_map_mean_raw, early_hr_mean_raw","2,058",695,-576.3,Tests whether late-window AC1 adds information beyond earlier raw MAP and HR.
+No-sedation subgroup,ac1_hr_late_mean,None,526,212,-175.0,Restricted to stay-T0 pairs without sedative exposure in the prior 12h; sedation covariate omitted.

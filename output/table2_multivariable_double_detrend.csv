@@ -1,0 +1,11 @@
+﻿Variable,OR (95% CI),P
+"HR AC1, late-centred window mean †",1.29 (0.91–1.83),0.159
+Invasive MV at -12h,0.71 (0.56–0.90),0.005
+Sedation exposure in prior 12h,4.70 (3.73–5.92),<0.001
+Beta-blocker exposure in prior 12h,0.66 (0.44–0.99),0.047
+ICU type: SICU vs MICU,0.69 (0.53–0.89),0.005
+ICU type: CCU/CSRU vs MICU,1.53 (1.15–2.05),0.004
+ICU type: Neuro/NICU vs MICU,0.29 (0.15–0.56),<0.001
+ICU type: Other vs MICU,0.83 (0.44–1.60),0.583
+Monitoring: ABP vs NBP,0.94 (0.73–1.19),0.591
+Monitoring: Mixed vs NBP,1.05 (0.75–1.49),0.760

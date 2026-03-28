@@ -1,0 +1,125 @@
+
+<style>
+body { font-family: Arial, sans-serif; font-size: 13px; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+th { background: #2c3e50; color: white; }
+tr:nth-child(even) { background: #f8f8f8; }
+tr.primary-var td { background: #fef9e7; font-weight: bold; }
+td.sig { color: #c0392b; font-weight: bold; }
+caption { font-size: 14px; font-weight: bold; margin-bottom: 6px; text-align: left; }
+</style>
+<table>
+<caption>Table 2. Primary Conditional Logistic Regression for Late-Onset Septic Shock (N=2,060; informative matched strata=695). † primary predictor (highlighted). Reference: ICU type=MICU, monitoring=NBP. Matching variables are conditioned out by design; standard logistic and GEE are sensitivity analyses.</caption>
+<thead><tr>
+<th>Variable</th>
+<th>OR (95% CI)</th>
+<th>P</th>
+</tr></thead><tbody>
+<tr class="primary-var">
+<td>HR AC1, late-centred window mean †</td>
+<td>1.29 (0.91–1.83)</td>
+<td>0.159</td>
+</tr>
+<tr>
+<td>Invasive MV at -12h</td>
+<td>0.71 (0.56–0.90)</td>
+<td class="sig">0.005</td>
+</tr>
+<tr>
+<td>Sedation exposure in prior 12h</td>
+<td>4.70 (3.73–5.92)</td>
+<td class="sig"><0.001</td>
+</tr>
+<tr>
+<td>Beta-blocker exposure in prior 12h</td>
+<td>0.66 (0.44–0.99)</td>
+<td class="sig">0.047</td>
+</tr>
+<tr>
+<td>ICU type: SICU vs MICU</td>
+<td>0.69 (0.53–0.89)</td>
+<td class="sig">0.005</td>
+</tr>
+<tr>
+<td>ICU type: CCU/CSRU vs MICU</td>
+<td>1.53 (1.15–2.05)</td>
+<td class="sig">0.004</td>
+</tr>
+<tr>
+<td>ICU type: Neuro/NICU vs MICU</td>
+<td>0.29 (0.15–0.56)</td>
+<td class="sig"><0.001</td>
+</tr>
+<tr>
+<td>ICU type: Other vs MICU</td>
+<td>0.83 (0.44–1.60)</td>
+<td>0.583</td>
+</tr>
+<tr>
+<td>Monitoring: ABP vs NBP</td>
+<td>0.94 (0.73–1.19)</td>
+<td>0.591</td>
+</tr>
+<tr>
+<td>Monitoring: Mixed vs NBP</td>
+<td>1.05 (0.75–1.49)</td>
+<td>0.760</td>
+</tr>
+</tbody></table><table>
+<caption>Model Summary</caption>
+<thead><tr>
+<th>Model</th>
+<th>Predictor</th>
+<th>Extra covariates</th>
+<th>N observations</th>
+<th>Informative strata</th>
+<th>Log-likelihood</th>
+<th>Note</th>
+</tr></thead><tbody>
+<tr>
+<td>Primary conditional logistic</td>
+<td>ac1_hr_late_mean</td>
+<td>None</td>
+<td>2,060</td>
+<td>695</td>
+<td>-617.9</td>
+<td>Matched-pair strata condition out matching variables and baseline hazard.</td>
+</tr>
+<tr>
+<td>Late-vitals-adjusted sensitivity</td>
+<td>ac1_hr_late_mean</td>
+<td>late_map_mean_raw, late_hr_mean_raw</td>
+<td>2,042</td>
+<td>691</td>
+<td>-495.7</td>
+<td>Additionally adjusts for raw late-window mean MAP and HR.</td>
+</tr>
+<tr>
+<td>Early-window independence</td>
+<td>ac1_hr_early_mean</td>
+<td>early_map_mean_raw, early_hr_mean_raw</td>
+<td>2,032</td>
+<td>691</td>
+<td>-573.9</td>
+<td>Early-window AC1 adjusted for raw early-window mean MAP and HR.</td>
+</tr>
+<tr>
+<td>Late AC1 adjusted for early vitals</td>
+<td>ac1_hr_late_mean</td>
+<td>early_map_mean_raw, early_hr_mean_raw</td>
+<td>2,059</td>
+<td>695</td>
+<td>-578.8</td>
+<td>Tests whether late-window AC1 adds information beyond earlier raw MAP and HR.</td>
+</tr>
+<tr>
+<td>No-sedation subgroup</td>
+<td>ac1_hr_late_mean</td>
+<td>None</td>
+<td>527</td>
+<td>212</td>
+<td>-175.4</td>
+<td>Restricted to stay-T0 pairs without sedative exposure in the prior 12h; sedation covariate omitted.</td>
+</tr>
+</tbody></table>

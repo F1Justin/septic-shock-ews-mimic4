@@ -1,0 +1,38 @@
+
+<style>
+body { font-family: Arial, sans-serif; font-size: 13px; }
+table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; }
+th { background: #2c3e50; color: white; }
+tr:nth-child(even) { background: #f8f8f8; }
+td.sig  { color: #c0392b; font-weight: bold; }
+td.good { color: #27ae60; font-weight: bold; }
+caption { font-size: 14px; font-weight: bold; margin-bottom: 6px; text-align: left; }
+</style>
+
+<table><caption>tableS1_gee</caption><thead><tr>
+<th>Model</th>
+<th>OR (95% CI)</th>
+<th>P</th>
+</tr></thead><tbody>
+<tr>
+<td>Standard logistic (unadjusted)</td>
+<td>1.90 (1.40–2.57)</td>
+<td class="sig"><0.001</td>
+</tr>
+<tr>
+<td>Standard logistic (adjusted)</td>
+<td>1.63 (1.18–2.25)</td>
+<td class="sig">0.003</td>
+</tr>
+<tr>
+<td>GEE logistic (unadjusted)</td>
+<td>1.89 (1.38–2.58)</td>
+<td class="sig"><0.001</td>
+</tr>
+<tr>
+<td>GEE logistic (adjusted)</td>
+<td>1.61 (1.17–2.22)</td>
+<td class="sig">0.003</td>
+</tr>
+</tbody></table>

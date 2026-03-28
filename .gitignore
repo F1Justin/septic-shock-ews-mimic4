@@ -1,0 +1,45 @@
+# ── MIMIC-IV raw data (PhysioNet DUA — do not redistribute) ──
+mimiciv/
+
+# ── Derived patient-level data (still under DUA) ──
+data/
+
+# ── Third-party reference materials & internal documents ──
+icu-csd-ref/
+mimic-code-ref/
+重要文献/
+审查报告/
+
+# ── Old / experimental results ──
+output/old/
+
+# ── LaTeX build artifacts ──
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.bbl
+*.blg
+
+# ── Old zh version ──
+report_zh.*
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# ── Runtime logs ──
+logs/
+
+# ── OS / editor ──
+.DS_Store
+.idea/
+.vscode/
+.cursor/

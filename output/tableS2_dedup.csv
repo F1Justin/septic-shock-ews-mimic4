@@ -1,0 +1,6 @@
+﻿Statistic,Full,Dedup,Full P,Dedup P
+"Late-window AC1-HR, shock median",0.392,0.392,<0.001,<0.001
+"Late-window AC1-HR, control median",0.342,0.341,—,—
+"Early-to-late delta, shock median",0.068,0.070,0.018,0.012
+"Early-to-late delta, control median",0.018,0.018,—,—
+Adjusted logistic OR for AC1 late mean,1.63 (1.18–2.25),1.65 (1.18–2.31),0.003,0.003

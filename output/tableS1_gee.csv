@@ -1,0 +1,5 @@
+﻿Model,OR (95% CI),P
+Standard logistic (unadjusted),1.90 (1.40–2.57),<0.001
+Standard logistic (adjusted),1.63 (1.18–2.25),0.003
+GEE logistic (unadjusted),1.89 (1.38–2.58),<0.001
+GEE logistic (adjusted),1.61 (1.17–2.22),0.003

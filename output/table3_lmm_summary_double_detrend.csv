@@ -1,0 +1,7 @@
+﻿Subgroup,Metric,Interaction_beta,Interaction_p,Random_effects,Interaction_p_fmt
+Full cohort,var_map,0.041786196459999446,0.8036161461241231,intercept+slope,0.8036
+Full cohort,ac1_hr,0.0014460720235908938,0.07193251938308276,intercept+slope,0.0719
+ABP-dominant,var_map,-0.04505829983847271,0.8348567765179611,intercept+slope,0.8349
+ABP-dominant,ac1_hr,0.0003152530928615537,0.8107348870459238,intercept+slope,0.8107
+NBP-dominant,var_map,0.15572579528798375,0.4022511458232423,intercept+slope,0.4023
+NBP-dominant,ac1_hr,0.0021913154765668017,0.02683143160997825,intercept+slope,0.0268
