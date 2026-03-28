@@ -771,9 +771,13 @@ within-shock-group time comparison ($p = 0.075$) nor the between-group compariso
 ($p = 0.330$) reached significance.
 This negative result is in contrast to earlier event-level analyses that used
 pseudo-replication; the corrected analysis is the definitive estimate.
-The perturbation-recovery analysis is therefore best viewed as a motivation for
-future studies using continuous waveform data, where event density and resolution
-would be substantially higher.
+The perturbation-recovery analysis is therefore best viewed as hypothesis-generating only.
+Turn-induced perturbations in principle offer a direct window into haemodynamic resilience,
+but their prognostic potential in this cohort is likely constrained by the hourly EHR
+temporal resolution: with MAP charted at $\sim$1-hour intervals, each 30-minute recovery
+window yields at most a handful of data points, fundamentally limiting recovery-curve
+characterisation.
+Continuous waveform data would be needed to properly evaluate this approach.
 
 \subsection{Limitations}
 \label{sec:limits}
@@ -887,13 +891,17 @@ and temporal external validation before any clinical deployment is considered.
 % ==============================================================
 \section*{Acknowledgements}
 MIMIC-IV data were provided by PhysioNet \citep{goldberger2000}.
-Analysis code is available from the corresponding author upon reasonable request.
 
 \section*{Conflicts of interest}
 None declared.
 
-\section*{Data availability}
-MIMIC-IV is available via PhysioNet (\url{https://physionet.org/content/mimiciv/}).
+\section*{Code and data availability}
+All analysis scripts are openly available at
+\url{https://github.com/F1Justin/septic-shock-ews-mimic4} (MIT licence).
+MIMIC-IV v3.1 is available via PhysioNet
+(\url{https://physionet.org/content/mimiciv/}) under the PhysioNet
+Credentialed Health Data Licence; derived patient-level data are not
+included in the code repository per the Data Use Agreement.
 
 % ==============================================================
 \bibliographystyle{abbrvnat}

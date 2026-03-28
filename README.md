@@ -39,13 +39,14 @@ This study uses **MIMIC-IV v3.1**, which requires credentialed access via Physio
 pip install -r requirements.txt
 ```
 
-### 2. Initialize database (one-time)
+### 2. Initialize database (one-time, optional)
 
 ```bash
 python scripts/01_setup_db.py
 ```
 
-Builds DuckDB views and derived tables (sepsis3, SOFA, vasopressor equivalents) from the MIMIC-IV parquet files.
+Builds DuckDB views and derived tables (sepsis3, SOFA, vasopressor equivalents) from the MIMIC-IV source files.
+You can still run this step manually, but `runall.sh` now performs a DuckDB preflight check and will automatically run `scripts/01_setup_db.py` if the database is missing or if copied views still point to stale absolute paths from another machine.
 
 ### 3. Run full pipeline
 
@@ -53,7 +54,14 @@ Builds DuckDB views and derived tables (sepsis3, SOFA, vasopressor equivalents) 
 bash runall.sh
 ```
 
-This executes Steps 2–8 sequentially and recompiles `report.pdf`. See `SETUP.md` for step-by-step details.
+This runs a DuckDB preflight check, auto-runs Step 1 when needed, then executes Steps 2–8 sequentially and recompiles `report.pdf`. See `SETUP.md` for step-by-step details.
+
+Useful options:
+
+```bash
+bash runall.sh --with-setup   # force Step 1 before the pipeline
+bash runall.sh --skip-setup   # skip Step 1 auto-checks
+```
 
 ---
 
@@ -65,7 +73,7 @@ This executes Steps 2–8 sequentially and recompiles `report.pdf`. See `SETUP.m
 ├── report.tex        # Manuscript source
 ├── report.pdf        # Compiled manuscript
 ├── SETUP.md          # Detailed pipeline documentation
-├── runall.sh         # Run Steps 2–8 + compile PDF
+├── runall.sh         # DuckDB preflight + optional Step 1 + Steps 2–8 + compile PDF
 └── requirements.txt  # Python dependencies
 ```
 
