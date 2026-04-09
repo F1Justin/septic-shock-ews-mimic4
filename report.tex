@@ -9,76 +9,69 @@
 %    · Table S1–S4: standard/GEE, dedup, bootstrap, late-vitals sensitivity
 %    · Abstract, Discussion, Limitations updated per reviewer comments
 % =============================================================
-\documentclass[12pt, a4paper]{article}
+\documentclass[referee,lineno,pdflatex]{sn-article-template/sn-jnl}
 
 % ── packages ──────────────────────────────────────────────────
-\usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath, amssymb}
-\usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{caption}
-\usepackage{subcaption}
-\usepackage{hyperref}
-\usepackage{natbib}
-\usepackage{setspace}
 \usepackage{microtype}
-\usepackage{xcolor}
-\usepackage{lineno}
+\usepackage[numbers,sort&compress]{natbib}
 \usepackage{array}
 \usepackage{makecell}
-\usepackage{threeparttable}
-
-\onehalfspacing
-\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\usepackage{orcidlink}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\raggedbottom
 
 % ── title block ───────────────────────────────────────────────
-\title{%
-  \textbf{Heart Rate Lag-1 Autocorrelation Is Associated with}\\
-  \textbf{Pre-shock Dynamics in Late-Onset Septic Shock:}\\
-  \textbf{A Single-Cohort Exploratory Analysis of MIMIC-IV}%
-}
-\author{%
-  Chengyi Fang\\
-  \small Tongji University School of Medicine\\
-  \small \texttt{f1justin@tongji.edu.cn}
-}
-\date{March 2026}
+\title[Heart Rate Lag-1 Autocorrelation and Pre-shock Dynamics]{Heart Rate Lag-1 Autocorrelation Is Associated with Pre-shock Dynamics in Late-Onset Septic Shock: A Single-Cohort Exploratory Analysis of MIMIC-IV}
+
+\author[1]{\fnm{Chengyi} \sur{Fang}\,\orcidlink{0009-0006-1237-7763}}\email{f1justin@tongji.edu.cn}
+\author*[2]{\fnm{Haiping} \sur{Yu}\,\orcidlink{0000-0002-3394-2841}}\email{pingping670@sina.com}
+\author*[3]{\fnm{Qiancheng} \sur{Luo}\,\orcidlink{0000-0003-4054-5593}}\email{luoqiancheng19@163.com}
+
+\affil[1]{\orgname{Tongji University School of Medicine}, \orgaddress{\city{Shanghai}, \country{China}}}
+\affil[2]{Department of Nursing, Pudong Gongli Hospital, Shanghai University of Medicine \& Health Sciences, \city{Shanghai}, \country{China}}
+\affil[3]{Department of Critical Care Medicine,  Pudong Gongli Hospital, Shanghai University of Medicine \& Health Sciences, \city{Shanghai}, \country{China}}
 
 % ==============================================================
 \begin{document}
 \maketitle
-\linenumbers
+\label{strobe:item1a}% STROBE item 1(a): study design in title (title page)
 
 % ==============================================================
 \begin{abstract}
-\noindent
-\textbf{Background.}
-Whether heart-rate dynamics become progressively less flexible before haemodynamic collapse
-is an active question in sepsis early-warning research.
-In hourly electronic health record (EHR) data, rising lag-1 autocorrelation (AC1) is more
-plausibly interpreted as \emph{physiological rigidity} than as a demonstration of
-high-frequency critical slowing down.
 
+\textbf{Background.}
+Septic shock carries in-hospital mortality exceeding 40\%, yet current severity scores
+capture the absolute magnitude of physiological derangement rather than the dynamic
+regulatory capacity that declines before haemodynamic collapse.
+In hourly electronic health record (EHR) data, rising heart-rate lag-1 autocorrelation
+(AC1) may reflect \emph{physiological rigidity} (progressive loss of cardiovascular
+regulatory flexibility) rather than high-frequency critical slowing down per se.
+
+\noindent
 \textbf{Methods.}
 From MIMIC-IV v3.1, we identified 41,296 Sepsis-3 ICU stays; 10,310 met an operational
 septic shock definition (vasopressor plus lactate $>$2\,mmol/L plus $\geq$1\,L crystalloid).
 Risk-set matching (1:2, admission SOFA $\pm$2) yielded 2,172 analysable matched pairs
 (725 shock, 1,447 control).
-Rolling 12-h variance (MAP) and HR AC1 were computed over a 48-h pre-event window after
+Rolling 12-h variance (MAP) and HR AC1 were computed over a 48-h pre-event observation period after
 a 24-h detrending burn-in.
 Primary comparisons used early- and late-centred window summaries with clustered GEE and
 global Holm correction; the primary adjusted analysis used conditional logistic regression
 stratified by matched pair and adjusted for ventilation, ICU type, monitoring modality,
 sedative, and beta-blocker exposure.
 
+\noindent
 \textbf{Results.}
 HR AC1 was significantly elevated in shock in the late-centred window
 (0.382 vs.\ 0.323; Holm $p<0.001$) but not in the early window (Holm $p=0.316$).
 The LMM time-by-group interaction was positive ($\beta=0.00143$, $p=0.024$).
-In the primary conditional logistic model, late-centred HR AC1 remained associated with shock
+In the primary conditional logistic model, late-centred HR AC1 remained correlated with shock
 (OR\,=\,1.60, 95\,\%\,CI\,1.15--2.22, $p=0.005$); sedative exposure showed the strongest
 independent association (OR\,=\,4.70, 3.73--5.93, $p<0.001$).
-After additional adjustment for concurrent mean MAP and HR, the HR AC1 term was no longer
+After additional adjustment for concurrent mean MAP and HR, the HR AC1 term was not
 significant (OR\,=\,1.23, 0.85--1.78, $p=0.271$).
 GEE and deduplicated-subset sensitivity analyses reproduced the primary estimate
 (OR\,=\,1.61 and 1.65, respectively).
@@ -86,6 +79,7 @@ The association was absent in the no-sedation subgroup (OR\,=\,1.07, $p=0.815$) 
 attenuated under double detrending (OR\,=\,1.29, $p=0.159$).
 MAP variance showed no robust late-centred group difference.
 
+\noindent
 \textbf{Conclusions.}
 HR AC1 is elevated in the near-event phase of late-onset septic shock and remains
 significant after care-setting adjustment, but does not survive concurrent vital-sign
@@ -93,53 +87,67 @@ adjustment.
 These findings support HR AC1 as a marker of late physiological rigidity co-evolving with
 haemodynamic deterioration, rather than as an independent occult early-warning signal.
 
-\noindent\textbf{Keywords:} late-onset septic shock, MIMIC-IV, critical slowing down,
-autocorrelation, early warning signal, physiological rigidity, conditional logistic regression.
+
+
+\label{strobe:abstract}% STROBE item 1(b): abstract summary
 \end{abstract}
+\keywords{late-onset septic shock, MIMIC-IV, critical slowing down, autocorrelation, early warning signal, physiological rigidity, conditional logistic regression}
 
 % ==============================================================
-\section{Introduction}
+\section{Background}
 \label{sec:intro}
 
 Septic shock is among the most time-critical syndromes in critical care,
-with in-hospital mortality exceeding 40\% despite modern management \citep{singer2016}.
-Current severity scores---SOFA, APACHE, SAPS---are predominantly static snapshots
-and may fail to capture the dynamic deterioration trajectory in the hours before
-haemodynamic collapse.
+with in-hospital mortality exceeding 40\% despite modern management \cite{singer2016}.
+Current severity scores---SOFA, APACHE, SAPS---as well as routine vital-sign monitoring,
+primarily reflect the absolute magnitude of physiological derangement rather than the
+dynamic regulatory capacity of the cardiovascular system.
+Yet before vasopressor initiation or overt haemodynamic collapse, patients often undergo
+a period of progressive loss of cardiovascular regulatory flexibility that these indices
+alone may fail to capture.
 
-Critical Slowing Down (CSD) theory, developed in ecology and nonlinear dynamics,
-has often motivated the search for rising autocorrelation and variance before critical
-transitions \citep{scheffer2009, dakos2012}.
-However, when only hourly nurse-charted vital signs are available, these summaries are
-better interpreted pragmatically as markers of \emph{physiological rigidity} or
-\emph{decompensated autonomic inflexibility}, rather than as direct proof of the
-high-frequency dynamical mechanisms originally described in ecological and waveform studies.
-Applied to physiology, Rector et al.\ \citeyearpar{rector2021} showed that such signals
-also depend on whether a variable is \emph{regulated} (e.g.\ blood pressure) or an
-\emph{effector} (e.g.\ heart rate), further cautioning against literal mechanistic transfer.
+Among the variables continuously monitored in the ICU, heart rate (HR) is the most
+immediately available, non-invasive readout of cardiovascular autonomic function:
+it is recorded continuously at the bedside without additional equipment, is not acutely
+confounded by vasopressor titration as mean arterial pressure is, and is available at
+every charting interval in the electronic health record.
+During the progression of sepsis, systemic inflammatory response and endothelial injury
+severely impair autonomic nervous system (ANS)-mediated cardiovascular homeostasis
+\cite{decastilho2018,adam2023}.
+This regulatory failure manifests as increasing \emph{physiological rigidity}: HR
+progressively loses its adaptive responsiveness to physiological demands---failing, for
+instance, to accelerate appropriately with fever or to recover promptly after
+resuscitation---and the system's ability to return to baseline following perturbations
+slows.
 
-Khalil et al.\ \citeyearpar{khalil2025} demonstrated HR~AC1 as the primary significant
-CSD indicator in an ICU extubation-failure cohort.
-Legault et al.\ \citeyearpar{legault2024} found variance-class indicators more predictive
-than autocorrelation-based indices in a longitudinal hemodialysis cohort.
-Chen et al.\ \citeyearpar{chen2012} originally formalised Dynamic Network Biomarker (DNB)
-theory, which identifies tipping points via rising intra-module variance and correlation;
-Liu et al.\ \citeyearpar{liu2019} extended this to a single-sample landscape-DNB framework.
+This pattern of slowing recovery and declining resilience as haemodynamic reserve is
+exhausted is consistent with what complex dynamical systems theory describes as
+\emph{Critical Slowing Down (CSD)} \cite{scheffer2009,dakos2012}.
+CSD provides a mathematical framework for quantifying such physiological rigidity at the
+bedside: its core statistical signature is rising lag-1 autocorrelation (AC1), reflecting
+a system increasingly locked to its prior state and unable to respond flexibly
+\cite{scheffer2009}.
+AC1 is directly computable from the HR time series available in any monitored ICU patient.
+Applying this framework to clinical medicine, Olde Rikkert et al.~\cite{olderikkert2016}
+proposed that slowing of recovery and rising autocorrelation constitute generic risk
+markers for acute severity transitions across a range of chronic diseases, providing a
+conceptual basis for translating CSD indicators into critical care practice.
+Khalil et al.~\cite{khalil2025} identified HR~AC1 as the primary significant CSD
+indicator before ICU extubation failure, suggesting the principle may extend to other
+forms of haemodynamic deterioration; Chen et al.~\cite{chen2012} found that rising
+intra-system correlation broadly characterises the pre-transition state in complex
+diseases.
+However, both lines of evidence relied on second-resolution waveform data or non-septic
+populations.
 
-MIMIC-IV \citep{johnson2023} offers an opportunity to test these frameworks at scale
-but presents unique challenges: vital signs are recorded at $\sim$1-hour intervals,
-far below the second-resolution waveform data used in most CSD-ICU studies.
-A further implication of a stringent 48-hour completeness requirement is that retained
-shock events will preferentially represent late-onset ICU deterioration rather than
-precipitous collapse immediately after admission.
-A central methodological concern is whether HR~AC1 elevation constitutes a
-physiological signal beyond illness severity, or primarily reflects that sicker patients
-(high SOFA) also have reduced heart-rate variability.
-
-We therefore describe a single-cohort exploratory analysis of hourly EHR-based
-heart-rate autocorrelation in MIMIC-IV, focused on a selected late-onset septic shock
-phenotype and framed primarily as a study of near-event physiological
-rigidity rather than as a definitive validation of CSD theory.
+In most ICUs, hourly nurse-charted EHR vital signs are the practical data standard---far
+below the sampling rates used in prior CSD-ICU work.
+Whether EHR-resolution HR~AC1 can serve as a warning signal before haemodynamic
+deterioration specifically in septic shock has not been examined in a large,
+methodologically controlled cohort.
+We therefore conducted an exploratory matched-cohort analysis using MIMIC-IV
+\cite{johnson2023} to assess whether hourly EHR-derived HR~AC1 is elevated before
+late-onset septic shock and to clarify its relationship with concurrent illness severity.
 
 % ==============================================================
 \section{Methods}
@@ -149,13 +157,13 @@ rigidity rather than as a definitive validation of CSD theory.
 MIMIC-IV version 3.1 was accessed under the PhysioNet Data Use Agreement.
 Derived concepts (SOFA, suspicion of infection, vasopressor equivalents)
 were generated using the official MIT \texttt{mimic-code} DuckDB SQL pipeline
-\citep{johnson2023}.
+\cite{johnson2023}.
 
 \subsection{Cohort construction}
 \label{sec:cohort}
 
 \paragraph{Sepsis-3 definition.}
-ICU stays satisfying Sepsis-3 criteria \citep{singer2016}---
+ICU stays satisfying Sepsis-3 criteria \cite{singer2016}---
 suspected infection (culture plus antibiotic within 24--72\,h)
 and SOFA score $\geq 2$---were extracted from the
 \texttt{mimiciv\_derived.sepsis3} table, yielding 41,296 eligible stays.
@@ -166,19 +174,18 @@ among all vasopressor initiations (norepinephrine, epinephrine, dopamine,
 phenylephrine, vasopressin; \texttt{inputevents} item IDs 221906, 221289, 221662,
 221749, 222315) within the ICU stay,
 we required at least one lactate measurement $>$2\,mmol/L
-within a $\pm$24-hour window around vasopressor start
+within a $\pm$24-hour interval around vasopressor start
 (lactate \texttt{itemid}s: 50813, 52442, 53154),
 vasopressor duration of at least 1\,hour,
 and at least 1\,L isotonic crystalloid in the preceding 24\,hours
-(\texttt{NaCl 0.9\%}, \texttt{LR}, or \texttt{D5LR}).
+(\texttt{NaCl 0.9\%}, \texttt{Lactated Ringer's solution (LR)}, or \texttt{dextrose 5\% in LR (D5LR)}).
 The earliest qualifying vasopressor time was designated $T_0$.
 This identified 10,310 shock stays.
 As a design-sensitivity check, the corresponding shock counts were 9,239 using
-$\pm$6\,h and 9,909 using $\pm$12\,h windows, indicating modest cohort-size
+$\pm$6\,h and 9,909 using $\pm$12\,h intervals, indicating modest cohort-size
 sensitivity to this operational choice.
-This remains operational rather than guideline-perfect because adequate fluid
-resuscitation is approximated from recorded crystalloid volume rather than from a
-prospectively adjudicated resuscitation endpoint.
+Adequate fluid resuscitation was approximated from recorded crystalloid volume as a
+pragmatic proxy for a prospectively adjudicated resuscitation endpoint.
 
 \paragraph{Risk-set matching.}
 For each shock patient, the elapsed time to $T_0$ from ICU admission ($H$) was computed.
@@ -187,11 +194,14 @@ analysability: candidates required at least 72\,h ICU observation before $T_0$
 (to support a 24\,h burn-in period plus a 48\,h analysis window) and at least
 24 actual hourly MAP observations and 24 actual hourly HR observations in the
 final 48\,h before $T_0$.
-The eligible control pool was a \emph{dynamic} risk set: all Sepsis-3 stays with
-ICU duration $\geq H$ hours whose own shock onset (if any) occurred \emph{after} time $H$
-were eligible, regardless of whether they later developed shock
-(\emph{future-shock controls permitted} before their own $T_0$).
-Up to two controls were drawn per case (seed 42) matched on admission SOFA $\pm$2,
+The eligible control pool was constructed as a \emph{dynamic} risk set.
+Specifically, Sepsis-3 stays were eligible if their ICU duration was $\geq H$ hours
+and their own shock onset (if any) occurred \emph{after} time $H$.
+This design allows patients who later developed shock to serve as
+\emph{future-shock controls} prior to their own $T_0$.
+Up to two controls were drawn per case (seed 42) matched on admission SOFA $\pm$2
+(1:2 ratio selected to increase statistical efficiency relative to 1:1 matching
+while preserving match quality \cite{austin2010}),
 with pseudo-$T_0 =$ \texttt{icu\_intime} $+ H$.
 After this pre-screen, 725 shock stays were matchable and yielded 1,450 matched control
 observations (2,175 total matched pairs; unique controls used up to 3 times).
@@ -201,13 +211,13 @@ All downstream analyses use the matched (stay, $T_0$) pair as the analysis unit.
 \label{sec:preprocessing}
 
 Hourly MAP (ABPm: item 220052; NBPm: item 220181, merged by preference)
-and HR (item 220045) were extracted for the 72-hour window preceding each $T_0$.
+and HR (item 220045) were extracted for the 72-hour period preceding each $T_0$.
 Monitoring modality (ABPm- vs.\ NBPm-dominant: $>$70\% of readings from one source)
 was labelled for sensitivity analysis using only measurements within the final
 48\,h analysis window.
 Preprocessing:
 \begin{enumerate}
-  \item Physiological range filtering: MAP $\in [30, 200]$\,mmHg; HR $\in [20, 300]$\,bpm.
+  \item Physiological range filtering: MAP between 30 and 200\,mmHg; HR between 20 and 300\,bpm (values outside these ranges were treated as implausible artefacts and excluded).
   \item Resampling to 1-hour bins (median aggregation).
   \item Causal detrending using a trailing 24-hour mean.
     The first 24\,h of the 72\,h extraction were used only as burn-in so that every
@@ -225,9 +235,8 @@ the pre-screening step therefore moved almost all data-quality exclusion upstrea
 Two sliding-window indicators were computed over the 48-hour post-burn-in residual series:
 \begin{description}
   \item[Variance-MAP] Rolling standard deviation of MAP residuals
-    (CSD predicts rising variance in a \emph{regulated} variable \citep{rector2021}).
-  \item[AC1-HR] Rolling lag-1 Pearson autocorrelation of HR residuals
-    (the sole significant CSD indicator in \citealt{khalil2025}).
+    (CSD predicts rising variance in a \emph{regulated} variable \cite{rector2021}).
+  \item[AC1-HR] Rolling lag-1 Pearson autocorrelation of HR residuals.
 \end{description}
 Window: 12\,hours; step: 1\,hour; $\approx$37 window values per patient.
 Each rolling window was indexed by its midpoint time rather than its end time;
@@ -264,18 +273,15 @@ denotes the matched analysis unit.
 \subsection{Baseline table}
 \label{sec:stats-table1}
 
-Because downstream preprocessing excluded only three matched windows, the final
-baseline table was redefined to describe the analyzable matched cohort itself rather than
-a largely uninformative analysable-versus-excluded audit.
-Baseline characteristics were therefore compared between shock and control rows within the
-analyzable matched cohort ($725$ shock, $1{,}447$ control).
-Covariates: age, sex, race, admission SOFA, ICU length of stay, ICU type
+Baseline characteristics were compared between shock and control rows within the
+analysable matched cohort ($725$ shock, $1{,}447$ control).
+Variables included: age, sex, race, admission SOFA, ICU length of stay, ICU type
 (first care unit), respiratory support before $T_0$, vasopressor use before
 $T_0$, hospital mortality, and monitoring modality.
-Continuous variables:  Wilcoxon rank-sum test; summary as median [IQR].
+Continuous variables: Wilcoxon rank-sum test; summary as median [IQR].
 Categorical variables: chi-square (Fisher's exact when expected cell count $<$5).
 Standardised mean difference (SMD) was computed for each variable
-(Cohen's $d$ for continuous; Austin--Stuart formula for binary \citeyearpar{austin2015}).
+(Cohen's $d$ for continuous; Austin--Stuart formula for binary \cite{austin2015}).
 
 \subsection{Primary matched multivariable analysis}
 \label{sec:stats-model}
@@ -305,7 +311,7 @@ as sensitivity analyses in Section~\ref{sec:stats-robust}.
 \label{sec:stats-robust}
 
 \paragraph{GEE (T1.3).}
-Generalised estimating equations \citep{liang1986} with a logistic link,
+Generalised estimating equations \cite{liang1986} with a logistic link,
 exchangeable within-cluster correlation structure, and \texttt{stay\_id} as the
 clustering unit were used to refit the adjusted model as a sensitivity analysis.
 For comparison, the corresponding unconditional standard logistic model is also
@@ -357,11 +363,93 @@ All analyses were performed in Python 3.14 (\texttt{pandas}, \texttt{numpy},
 \subsection{Cohort characteristics and representativeness}
 \label{sec:res-cohort}
 
-Table~\ref{tab:cohort} summarises the cohort construction cascade.
+Figure~\ref{fig:consort} and Table~\ref{tab:cohort} summarise the cohort construction cascade.
 Of 41,296 Sepsis-3 ICU stays, 10,310 (25.0\%) met the stricter operational shock definition.
 After upstream data-quality pre-screening and risk-set matching, 725 shock and 1,450 control
 (stay, $T_0$) pairs were generated; 725 shock and 1,447 control pairs remained analysable after
 time-series cleaning (2,172 total).
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance = 10mm,
+    box/.style  = {draw = black!65, rounded corners = 3pt,
+                   fill = blue!6,   text width = 62mm,
+                   align = center,  font = \small,
+                   inner sep = 5pt, minimum height = 11mm},
+    excl/.style = {draw = black!55, rounded corners = 3pt,
+                   fill = orange!10, text width = 52mm,
+                   align = center,   font = \small,
+                   inner sep = 4pt},
+    arr/.style  = {-{Stealth[scale=0.9]}, semithick},
+    harr/.style = {-{Stealth[scale=0.8]}, black!45},
+  ]
+    %% ── Main column ──────────────────────────────────────────────
+    \node[box] (N1)
+      {\textbf{MIMIC-IV v3.1 ICU stays}\\[3pt]$n = 94{,}458$};
+    \node[box, below=of N1] (N2)
+      {\textbf{Sepsis-3 eligible}\\[3pt]$n = 41{,}296$};
+    \node[box, below=of N2] (N3)
+      {\textbf{Septic shock -- operational definition}\\[3pt]$n = 10{,}310$};
+    \node[box, below=of N3] (N4)
+      {\textbf{Pre-screened risk-set pool}\\[2pt]
+       {\footnotesize(Sepsis-3 stays; $\geq$72\,h obs.; $\geq$24 hourly MAP/HR readings)}\\[2pt]
+       $n_{\text{pool}} = 20{,}690$};
+    \node[box, below=of N4] (N5)
+      {\textbf{After 1:2 risk-set matching (SOFA\,$\pm$2)}\\[3pt]
+       Shock: $n = 725$\quad Control: $n = 1{,}450$};
+    \node[box, below=of N5] (N6)
+      {\textbf{Analysable matched cohort}\\[3pt]
+       Shock: $n = 725$ \textbullet{} Control: $n = 1{,}447$ \textbullet{} Total: $2{,}172$};
+
+    %% ── Vertical arrows ──────────────────────────────────────────
+    \draw[arr] (N1) -- (N2);
+    \draw[arr] (N2) -- (N3);
+    \draw[arr] (N3) -- (N4);
+    \draw[arr] (N4) -- (N5);
+    \draw[arr] (N5) -- (N6);
+
+    %% ── Midpoints between consecutive nodes ──────────────────────
+    \path (N1.south) -- coordinate[midway] (M12) (N2.north);
+    \path (N2.south) -- coordinate[midway] (M23) (N3.north);
+    \path (N3.south) -- coordinate[midway] (M34) (N4.north);
+    \path (N4.south) -- coordinate[midway] (M45) (N5.north);
+    \path (N5.south) -- coordinate[midway] (M56) (N6.north);
+
+    %% ── Common left edge for all exclusion boxes ─────────────────
+    \coordinate (XL) at ($(N1.east) + (8mm, 0)$);
+
+    %% ── Exclusion boxes ──────────────────────────────────────────
+    \node[excl, anchor=west] (E1) at (XL |- M12)
+      {Excluded: not meeting\\Sepsis-3 criteria\\$n = 53{,}162$};
+    \node[excl, anchor=west] (E2) at (XL |- M23)
+      {Excluded: no qualifying vasopressor,\\
+       lactate $>$2\,mmol/L, or $\geq$1\,L\\
+       crystalloid ($n = 30{,}986$)};
+    \node[excl, anchor=west] (E3) at (XL |- M34)
+      {Excluded: ${<}$72\,h ICU stay\\
+       or insufficient MAP/HR\\observations};
+    \node[excl, anchor=west] (E4) at (XL |- M45)
+      {Excluded: no eligible 1:2\\match on SOFA\,$\pm$2};
+    \node[excl, anchor=west] (E5) at (XL |- M56)
+      {Excluded: time-series\\cleaning ($n = 3$ control pairs)};
+
+    %% ── Horizontal branch arrows ─────────────────────────────────
+    \draw[harr] (N1.east |- M12) -- (E1.west);
+    \draw[harr] (N2.east |- M23) -- (E2.west);
+    \draw[harr] (N3.east |- M34) -- (E3.west);
+    \draw[harr] (N4.east |- M45) -- (E4.west);
+    \draw[harr] (N5.east |- M56) -- (E5.west);
+  \end{tikzpicture}
+  \caption{%
+    \textbf{Participant flow diagram.}
+    CONSORT-style flow of ICU stays from the MIMIC-IV v3.1 source database through
+    Sepsis-3 eligibility screening, operational septic shock definition, data-quality
+    pre-screening, 1:2 risk-set matching, and final time-series cleaning to the
+    analysable matched cohort.
+  }
+  \label{fig:consort}
+\end{figure}
 
 \begin{table}[ht]
 \centering
@@ -385,12 +473,12 @@ Total analysable & 2,172 & --- \\
 \end{table}
 
 \paragraph{Baseline profile (Table~\ref{tab:table1}).}
-Because downstream preprocessing excluded only three matched windows, Table~\ref{tab:table1}
-now focuses on the analyzable matched cohort itself (shock vs.\ control) rather than on a
-largely uninformative analysable-versus-excluded audit.
+Table~\ref{tab:table1} describes the analysable matched cohort (shock vs.\ control).
+Because downstream preprocessing excluded only three matched pairs, the table characterises
+the cohort as a whole rather than providing an analysable-versus-excluded audit.
 As expected under risk-set matching, age and admission SOFA were broadly similar between
 groups, whereas hospital mortality and pre-$T_0$ vasopressor exposure were substantially
-higher in shock windows.
+higher in the shock group.
 
 \begin{table}[ht]
 \centering
@@ -399,7 +487,6 @@ higher in shock windows.
   Values are median [IQR] or $n$ (\%).%
 }
 \label{tab:table1}
-\begin{threeparttable}
 \begin{tabular}{lrrrrr}
 \toprule
 Variable &
@@ -438,7 +525,6 @@ Mixed                 & 86 (11.9\%) & 166 (11.5\%)  & --- & 0.012 \\
   \item Full Table 1 with race breakdown and complete SMD values is provided in
         \texttt{output/table1\_baseline.csv}.
 \end{tablenotes}
-\end{threeparttable}
 \end{table}
 
 \subsection{Primary EWS: HR lag-1 autocorrelation}
@@ -447,8 +533,7 @@ Mixed                 & 86 (11.9\%) & 166 (11.5\%)  & --- & 0.012 \\
 Results are summarised in Table~\ref{tab:main} and illustrated in
 Figures~\ref{fig:timeseries} and~\ref{fig:delta}.
 
-\begin{table}[ht]
-\centering
+\begin{sidewaystable}[p]
 \caption{%
   Between-group comparison of EWS indicators.
   Early/late refer to rolling 12\,h windows indexed by midpoint time.
@@ -458,21 +543,18 @@ Figures~\ref{fig:timeseries} and~\ref{fig:delta}.
   across full-cohort and subgroup comparisons.
 }
 \label{tab:main}
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{llrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrrr}
 \toprule
-\multicolumn{2}{c}{} & \multicolumn{3}{c}{Early-centred mean} & \multicolumn{3}{c}{Late-centred mean} & \multicolumn{3}{c}{$\Delta$ (late - early)} \\
-\cmidrule(r){3-5} \cmidrule(r){6-8} \cmidrule(r){9-11}
-Indicator & & Shock & Control & GEE / Holm $p$ & Shock & Control & GEE / Holm $p$ & Shock & Control & GEE / Holm $p$ \\
+ & \multicolumn{3}{c}{Early-centred mean} & \multicolumn{3}{c}{Late-centred mean} & \multicolumn{3}{c}{$\Delta$ (late $-$ early)} \\
+\cmidrule(r){2-4} \cmidrule(r){5-7} \cmidrule(r){8-10}
+Indicator & Shock & Control & GEE / Holm $p$ & Shock & Control & GEE / Holm $p$ & Shock & Control & GEE / Holm $p$ \\
 \midrule
-\textbf{Variance-MAP} & & 64.20 & 72.30 & 0.0062 / 0.0685 & 77.00 & 74.99 & 0.5129 / 1.0000 & 12.78 & 2.43 & 0.0016 / 0.0249 \\
-\textbf{AC1-HR}       & & 0.345 & 0.323 & 0.0395 / 0.3157 & 0.382 & 0.323 & \textbf{$<$0.001 / $<$0.001} & 0.036 & $-$0.002 & 0.0208 / 0.1872 \\
+\textbf{Variance-MAP} & 64.20 & 72.30 & 0.0062 / 0.0685 & 77.00 & 74.99 & 0.5129 / 1.0000 & 12.78 & 2.43 & 0.0016 / 0.0249 \\
+\textbf{AC1-HR}       & 0.345 & 0.323 & 0.0395 / 0.3157 & 0.382 & 0.323 & $<$0.001 / $<$0.001 & 0.036 & $-$0.002 & 0.0208 / 0.1872 \\
 \bottomrule
 \end{tabular}
-}
-\small\par
-Full cohort: shock $n=725$; control $n=1{,}447$.
-\end{table}
+\footnotetext{Full cohort: shock $n=725$; control $n=1{,}447$.}
+\end{sidewaystable}
 
 HR~AC1 was the clearest dynamic signal.
 The early-window HR~AC1 difference was modest (0.345 vs.\ 0.323; raw $p=0.0395$)
@@ -499,10 +581,15 @@ $T_0$ itself (a likely consequence of haemodynamic collapse rather than an early
   \includegraphics[width=\linewidth]{output/fig1_timeseries.png}
   \caption{%
     \textbf{EWS time-series (48 hours pre-event).}
-    Group-mean ($\pm$95\,\% CI) of MAP variance (upper) and HR~AC1 (lower)
-    for shock (red) and control (blue) groups.
+    Thin lines and shaded bands show group-mean ($\pm$95\,\% CI) of MAP variance (upper)
+    and HR~AC1 (lower) for shock (red) and control (blue) groups; thick lines show
+    LOESS-smoothed trends (bandwidth $= 0.3$) to aid visualisation of temporal divergence.
     Vertical dashed line: $T_0$. Green dotted line: early-window-center boundary ($-24$\,h).
     Orange dotted line: late-centred-window boundary ($-12$\,h).
+    The upper panel shows a right-skewed MAP variance distribution in both groups,
+    reflecting that elevated haemodynamic instability is concentrated in a minority of
+    time windows rather than being uniformly distributed; the sharp rise at $T_0$ likely
+    reflects haemodynamic collapse rather than an early warning.
     HR~AC1 diverges mainly in the near-event late-centred interval, whereas MAP variance
     shows broader overlap.
   }
@@ -678,13 +765,13 @@ a physiological resilience interpretation at hourly EHR resolution.
 \subsection{Principal finding}
 
 This single-cohort exploratory analysis demonstrates that HR~AC1 is associated with
-pre-shock dynamics over a 48-hour window in a risk-set-matched cohort enriched for
-late-onset septic shock, and that this association persists in a matched conditional
-analysis with care-setting covariate adjustment.
-The finding is consistent with Khalil et al.'s \citeyearpar{khalil2025}
+pre-shock dynamics over a 48-hour observation period.
+Notably, in our risk-set-matched cohort enriched for late-onset septic shock, this
+association persisted after matched conditional analysis adjusting for care-setting covariates.
+The finding is consistent with Khalil et al.~\cite{khalil2025}
 identification of HR~AC1 as a sensitive dynamic summary in ICU data,
 and extends it to a more tightly filtered administrative EHR cohort.
-From the perspective of Rector et al.\ \citeyearpar{rector2021},
+From the perspective of Rector et al.~\cite{rector2021},
 HR as an effector variable might theoretically show reduced rather than increased AC1
 (reflecting adaptive decompensation rather than CSD in a regulated variable).
 In hourly EHR data, the present results are best interpreted as evidence of
@@ -740,9 +827,9 @@ However, the additional sensitivity model adjusting for these raw final-12\,h me
 no longer retained an HR~AC1 association (OR\,=\,1.23, $p = 0.271$; Table~S4),
 suggesting that the clinically relevant information in the late-centred AC1 summary may overlap
 substantially with contemporaneous mean-level MAP and HR abnormalities.
-In that sense, HR~AC1 appears to co-evolve with mean-level haemodynamic deterioration
-and may be most useful as an additional descriptor of late physiological rigidity,
-rather than as a standalone signal separable from routine bedside vital signs.
+In that sense, HR~AC1 appears to co-evolve with mean-level haemodynamic deterioration.
+Therefore, it may be most useful as an additional descriptor of late physiological rigidity,
+rather than a standalone occult signal separable from routine bedside vital signs.
 The early-window sensitivity analysis is consistent with this interpretation:
 once raw early-window MAP and HR were included, early-window HR~AC1 itself was not
 independently associated with shock (Table~S5A).
@@ -800,7 +887,7 @@ definition strictness against sample retention in MIMIC-IV, not as a claim that 
 fully represents guideline-concordant resuscitation for all body sizes.
 Some short-lived or non-septic vasopressor episodes may therefore still be retained,
 and some included patients may have undergone only partial fluid resuscitation.
-The choice of a $\pm$24\,h lactate coexistence window also affects cohort size
+The choice of a $\pm$24\,h lactate coexistence interval also affects cohort size
 (9,239 shocks at $\pm$6\,h; 9,909 at $\pm$12\,h; 10,310 at $\pm$24\,h).
 A cohort-size sensitivity analysis for stricter crystalloid thresholds showed a monotonic
 reduction in shock stays from 10,310 at 1.0\,L to 9,839 at 1.5\,L, 9,369 at 2.0\,L,
@@ -867,7 +954,7 @@ findings into decision-support metrics with calibrated probabilities.
 
 In a selected subset of continuously monitored MIMIC-IV sepsis patients enriched for
 late-onset shock, HR~lag-1 autocorrelation is associated with a near-event late-centred
-deterioration over a 48-hour window and remains significant in a matched conditional analysis
+deterioration over a 48-hour observation period and remains significant in a matched conditional analysis
 that includes sedative and beta-blocker covariates.
 Standard logistic, GEE, deduplicated-subset, and bootstrap sensitivity analyses all
 reproduced the late-centred HR~AC1 association.
@@ -889,117 +976,74 @@ high-frequency waveform data, pharmacological confounder control,
 and temporal external validation before any clinical deployment is considered.
 
 % ==============================================================
-\section*{Acknowledgements}
-MIMIC-IV data were provided by PhysioNet \citep{goldberger2000}.
+\backmatter
 
-\section*{Conflicts of interest}
-None declared.
+\bmhead{Acknowledgements}
+MIMIC-IV data were provided by PhysioNet \cite{goldberger2000}.
 
-\section*{Code and data availability}
-All analysis scripts are openly available at
-\url{https://github.com/F1Justin/septic-shock-ews-mimic4} (MIT licence).
-MIMIC-IV v3.1 is available via PhysioNet
+\section*{Declarations}
+
+\subsection*{Ethics approval and consent to participate}
+MIMIC-IV v3.1 is a de-identified, publicly available critical care database.
+The original data collection at Beth Israel Deaconess Medical Center was
+approved by the Institutional Review Board (IRB), which granted a waiver of
+informed consent owing to the retrospective and de-identified nature of the
+data.
+Access to MIMIC-IV was obtained by C.F.\ under PhysioNet's standard
+Credentialed Health Data Licence following completion of the CITI
+``Data or Specimens Only Research'' training programme
+(Record ID: 75937586; completed 16 March 2026; valid until 16 March 2029;
+score 97\%; verifiable at
+\url{https://www.citiprogram.org/verify/?ke27fd37e-2675-475a-a266-2fee671ede6f-75937586}).
+No additional IRB approval was required for this secondary analysis of
+de-identified records.
+
+\subsection*{Consent for publication}
+Not applicable. All data are fully de-identified; no individual patient data
+are presented.
+
+\subsection*{Availability of data and materials}
+MIMIC-IV v3.1 is freely available via PhysioNet
 (\url{https://physionet.org/content/mimiciv/}) under the PhysioNet
 Credentialed Health Data Licence; derived patient-level data are not
-included in the code repository per the Data Use Agreement.
+redistributed per the Data Use Agreement.
+
+\subsection*{Competing interests}
+The authors declare that they have no competing interests.
+
+\subsection*{Funding}
+\label{strobe:funding}% STROBE item 22
+No funding was received for this work.
+
+\subsection*{Authors' contributions}
+C.F.: Conceptualization, Methodology, Software, Formal analysis, Data
+curation, Writing~-- original draft, Visualization, and manuscript revision.
+H.Y.: Discussion of the proposed research idea, correspondence, and
+coordination of independent clinical review of the manuscript.
+Q.L.: Critical clinical review of the manuscript, expert adjudication of
+the septic shock definition and physiological rigidity framework, and
+supervision of the clinical interpretation.
+All authors read and approved the final manuscript.
+
+\subsection*{Code availability}
+All analysis scripts are openly available at
+\url{https://github.com/F1Justin/septic-shock-ews-mimic4} under the MIT
+License.
 
 % ==============================================================
-\bibliographystyle{abbrvnat}
-\IfFileExists{references.bib}{\bibliography{references}}{}
-
-% ── inline bibliography (fallback if no .bib file) ────────────
-\IfFileExists{references.bib}{}{%
-\begin{thebibliography}{99}
-
-\bibitem[Austin and Stuart, 2015]{austin2015}
-Austin PC, Stuart EA.
-Moving towards best practice when using inverse probability of treatment weighting
-(IPTW) using the propensity score to estimate causal treatment effects in
-observational studies.
-\textit{Stat Med}. 2015;34(28):3661--3679.
-
-\bibitem[Dakos et al., 2012]{dakos2012}
-Dakos V, Carpenter SR, Brock WA, et al.
-Methods for detecting early warnings of critical transitions in time series
-illustrated using simulated ecological data.
-\textit{PLoS ONE}. 2012;7(7):e41010.
-
-\bibitem[Goldberger et al., 2000]{goldberger2000}
-Goldberger AL, Amaral LAN, Glass L, et al.
-PhysioBank, PhysioToolkit, and PhysioNet: Components of a New Research Resource for
-Complex Physiologic Signals.
-\textit{Circulation}. 2000;101(23):e215--e220.
-
-\bibitem[Hamed and Rao, 1998]{hamed1998}
-Hamed KH, Rao AR.
-A modified Mann-Kendall trend test for autocorrelated data.
-\textit{J Hydrol}. 1998;204(1-4):182--196.
-
-\bibitem[Hern\'{a}n and Robins, 2016]{hernan2016}
-Hern\'{a}n MA, Sauer BC, Hern\'{a}ndez-D\'{i}az S, Platt R, Shrier I.
-Specifying a target trial prevents immortal time bias and other self-inflicted
-injuries in observational analyses.
-\textit{J Clin Epidemiol}. 2016;79:70--75.
-
-\bibitem[Johnson et al., 2023]{johnson2023}
-Johnson AEW, Bulgarelli L, Shen L, et al.
-MIMIC-IV, a freely accessible electronic health record dataset.
-\textit{Sci Data}. 2023;10:1.
-
-\bibitem[Khalil et al., 2025]{khalil2025}
-Khalil L, George SV, Brown KL, Ray S, Arridge S.
-Transitions in intensive care: investigating critical slowing down post extubation.
-\textit{PLoS ONE}. 2025;20(1):e0317211.
-
-\bibitem[Legault et al., 2024]{legault2024}
-Legault V, Pu Y, Weinans E, Cohen AA.
-Application of early warning signs to physiological contexts: a comparison of
-multivariate indices in patients on long-term hemodialysis.
-\textit{Front Netw Physiol}. 2024;4:1299162.
-
-\bibitem[Liang and Zeger, 1986]{liang1986}
-Liang K-Y, Zeger SL.
-Longitudinal data analysis using generalized linear models.
-\textit{Biometrika}. 1986;73(1):13--22.
-
-\bibitem[Chen et al., 2012]{chen2012}
-Chen L, Liu R, Liu Z-P, Li M, Aihara K.
-Detecting early-warning signals for sudden deterioration of complex diseases
-by dynamical network biomarkers.
-\textit{Sci Rep}. 2012;2:342.
-
-\bibitem[Liu et al., 2019]{liu2019}
-Liu X, Chang X, Leng S, Tang H, Aihara K, Chen L.
-Detection for disease tipping points by landscape dynamic network biomarkers.
-\textit{Natl Sci Rev}. 2019;6(4):775--785.
-
-\bibitem[Rector et al., 2021]{rector2021}
-Rector JL, Gijzel SMW, Van De Leemput IA, Van Meulen FB, Olde Rikkert MGM, Melis RJF.
-Dynamical indicators of resilience from physiological time series in geriatric inpatients:
-lessons learned.
-\textit{Exp Gerontol}. 2021;149:111341.
-
-\bibitem[Scheffer et al., 2009]{scheffer2009}
-Scheffer M, Bascompte J, Brock WA, et al.
-Early-warning signals for critical transitions.
-\textit{Nature}. 2009;461:53--59.
-
-\bibitem[Singer et al., 2016]{singer2016}
-Singer M, Deutschman CS, Seymour CW, et al.
-The Third International Consensus Definitions for Sepsis and Septic Shock (Sepsis-3).
-\textit{JAMA}. 2016;315(8):801--810.
-
-\end{thebibliography}
-}% end \IfFileExists fallback
+\bibliographystyle{sn-article-template/bst/sn-vancouver-num}
+\bibliography{references}
 
 % ==============================================================
+\bmhead{Supplementary information}
+
 \clearpage
-\appendix
-\section*{Supplementary Material}
-\addcontentsline{toc}{section}{Supplementary Material}
+\noindent\textbf{Supplementary Material}
 
 \renewcommand{\thefigure}{S\arabic{figure}}
 \renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theHfigure}{S\arabic{figure}}
+\renewcommand{\theHtable}{S\arabic{table}}
 \setcounter{figure}{0}
 \setcounter{table}{0}
 

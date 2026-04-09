@@ -10,6 +10,10 @@ mimic-code-ref/
 重要文献/
 审查报告/
 
+# ── Local-only: cover letter, STROBE checklist, meeting slides (keep on disk, not on GitHub) ──
+submission/
+meeting/
+
 # ── Old / experimental results ──
 output/old/
 
@@ -23,12 +27,26 @@ output/old/
 *.toc
 *.bbl
 *.blg
-*.bib
+*.nav
+*.snm
+*.vrb
+*.run.xml
 
-# ── Journal submission template (local reference only) ──
+# ── Regenerated PDFs (compile from .tex; keeps diffs small on GitHub) ──
+report.pdf
+cover_letter.pdf
+strobe_checklist.pdf
+meeting_slides.pdf
+zh-report.pdf
+*_副本.pdf
+
+# ── Draft / duplicate manuscript (keep locally if needed) ──
+report_副本.tex
+
+# ── Journal submission template (large; download Springer Nature template separately) ──
 sn-article-template/
 
-# ── Chinese manuscript version ──
+# ── Chinese manuscript version (optional local copy) ──
 report_zh.*
 zh-report.*
 
@@ -51,3 +69,5 @@ remote_rerun_compare/
 .idea/
 .vscode/
 .cursor/
+
+# Note: references.bib is tracked (required for report.tex on GitHub).

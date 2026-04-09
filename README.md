@@ -54,7 +54,7 @@ You can still run this step manually, but `runall.sh` now performs a DuckDB pref
 bash runall.sh
 ```
 
-This runs a DuckDB preflight check, auto-runs Step 1 when needed, then executes Steps 2–8 sequentially and recompiles `report.pdf`. See `SETUP.md` for step-by-step details.
+This runs a DuckDB preflight check, auto-runs Step 1 when needed, then executes Steps 2–8 sequentially and recompiles `report.pdf` in the repository root. See `SETUP.md` for step-by-step details.
 
 Useful options:
 
@@ -68,14 +68,18 @@ bash runall.sh --skip-setup   # skip Step 1 auto-checks
 ## Repository Structure
 
 ```
-├── scripts/          # Analysis pipeline (01–08)
-├── output/           # Figures and result tables
-├── report.tex        # Manuscript source
-├── report.pdf        # Compiled manuscript
-├── SETUP.md          # Detailed pipeline documentation
-├── runall.sh         # DuckDB preflight + optional Step 1 + Steps 2–8 + compile PDF
-└── requirements.txt  # Python dependencies
+├── scripts/           # Analysis pipeline (01–08)
+├── output/            # Figures and result tables (from pipeline)
+├── report.tex         # Main manuscript (Springer Nature sn-jnl)
+├── references.bib     # Bibliography (tracked; required for LaTeX)
+├── SETUP.md           # Detailed pipeline documentation
+├── runall.sh          # DuckDB preflight + optional Step 1 + Steps 2–8 + compile PDF
+└── requirements.txt   # Python dependencies
 ```
+
+`report.pdf` and other LaTeX-generated PDFs are listed in `.gitignore`; run `pdflatex` (or `runall.sh`) to produce them locally. Clone the [Springer Nature LaTeX template](https://www.springernature.com/gp/authors/campaigns/latex-author-support) into `sn-article-template/` beside `report.tex` (that directory is ignored here to keep the repo small).
+
+Optional local folders **`submission/`** (cover letter, STROBE) and **`meeting/`** (slides, notes) are **gitignored**; keep them on your machine if you use them, they are not part of the public repository.
 
 ---
 

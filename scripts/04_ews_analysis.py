@@ -319,7 +319,9 @@ def export_table3(stats_df: pd.DataFrame, output_path: Path) -> pd.DataFrame:
 
 
 def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
-    """MAP variance + HR AC1 时序均值 ±95% CI。"""
+    """MAP variance + HR AC1 时序均值 ±95% CI，叠加 LOESS 平滑趋势线。"""
+    from statsmodels.nonparametric.smoothers_lowess import lowess
+
     def agg(metric: str, conf_col: str) -> pd.DataFrame:
         w = windows_df[~windows_df[conf_col]]
         return (
@@ -327,6 +329,15 @@ def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
             .agg(mean="mean", sem=lambda x: x.sem())
             .reset_index()
         )
+
+    # Darken a hex colour for the LOESS overlay line
+    def _darken(hex_color: str, factor: float = 0.65) -> str:
+        import colorsys
+        hex_color = hex_color.lstrip("#")
+        r, g, b = (int(hex_color[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
+        h, l, s = colorsys.rgb_to_hls(r, g, b)
+        r2, g2, b2 = colorsys.hls_to_rgb(h, max(0, l * factor), s)
+        return "#{:02x}{:02x}{:02x}".format(int(r2 * 255), int(g2 * 255), int(b2 * 255))
 
     agg_map = agg("var_map", "low_conf_map")
     agg_hr = agg("ac1_hr", "low_conf_hr")
@@ -340,11 +351,21 @@ def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
             sub = agg_df[agg_df["group"] == grp].sort_values("hours_before_T0")
             if sub.empty:
                 continue
-            x = sub["hours_before_T0"]
-            y = sub["mean"]
-            ci = 1.96 * sub["sem"]
-            ax.plot(x, y, color=COLORS[grp], label=grp, linewidth=1.8)
-            ax.fill_between(x, y - ci, y + ci, color=COLORS[grp], alpha=0.2)
+            x = sub["hours_before_T0"].to_numpy()
+            y = sub["mean"].to_numpy()
+            ci = 1.96 * sub["sem"].to_numpy()
+            # Raw mean ± CI band (thin, translucent)
+            ax.plot(x, y, color=COLORS[grp], linewidth=1.2, alpha=0.45, label=f"{grp} (mean)")
+            ax.fill_between(x, y - ci, y + ci, color=COLORS[grp], alpha=0.15)
+            # LOESS smoothed trend line (thicker, darker)
+            smoothed = lowess(y, x, frac=0.3, return_sorted=True)
+            ax.plot(
+                smoothed[:, 0],
+                smoothed[:, 1],
+                color=_darken(COLORS[grp]),
+                linewidth=2.5,
+                label=f"{grp} (LOESS)",
+            )
         ax.axvline(0, color="grey", linestyle="--", linewidth=1.2)
         ax.axvline(EARLY_WINDOW_HI, color="green", linestyle=":", linewidth=1.2, alpha=0.9)
         ax.axvline(LATE_WINDOW_LO, color="orange", linestyle=":", linewidth=1.2, alpha=0.9)
