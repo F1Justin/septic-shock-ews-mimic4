@@ -18,8 +18,13 @@
 \usepackage[numbers,sort&compress]{natbib}
 \usepackage{array}
 \usepackage{makecell}
-\usepackage{orcidlink}
 \usepackage{tikz}
+% sn-jnl.cls defines \orcidlogo via EPS; clear it so orcidlink (texlive 2025)
+% can redefine it with its own TikZ implementation (no external image needed).
+\makeatletter
+\@ifundefined{orcidlogo}{}{\let\orcidlogo\relax}
+\makeatother
+\usepackage{orcidlink}
 \usetikzlibrary{arrows.meta, positioning, calc}
 \raggedbottom
 
@@ -979,22 +984,25 @@ and temporal external validation before any clinical deployment is considered.
 \backmatter
 
 \bmhead{Acknowledgements}
-MIMIC-IV data were provided by PhysioNet \cite{goldberger2000}.
+The data used in this study are from MIMIC-IV version~3.1 \cite{johnson2024mimiciv},
+hosted on PhysioNet \cite{goldberger2000}.
+We thank the researchers at the MIT Laboratory for Computational Physiology and
+Beth Israel Deaconess Medical Center for making this resource publicly available.
 
 \section*{Declarations}
 
 \subsection*{Ethics approval and consent to participate}
-MIMIC-IV v3.1 is a de-identified, publicly available critical care database.
+This study is a secondary analysis of MIMIC-IV version~3.1
+\cite{johnson2024mimiciv,johnson2023}, a de-identified, publicly available
+critical care database.
 The original data collection at Beth Israel Deaconess Medical Center was
-approved by the Institutional Review Board (IRB), which granted a waiver of
-informed consent owing to the retrospective and de-identified nature of the
+approved by the Institutional Review Board (IRB) of the Massachusetts Institute
+of Technology and Beth Israel Deaconess Medical Center, which granted a waiver
+of informed consent owing to the retrospective and de-identified nature of the
 data.
-Access to MIMIC-IV was obtained by C.F.\ under PhysioNet's standard
-Credentialed Health Data Licence following completion of the CITI
-``Data or Specimens Only Research'' training programme
-(Record ID: 75937586; completed 16 March 2026; valid until 16 March 2029;
-score 97\%; verifiable at
-\url{https://www.citiprogram.org/verify/?ke27fd37e-2675-475a-a266-2fee671ede6f-75937586}).
+Access to MIMIC-IV was obtained by C.F.\ under PhysioNet's Credentialed Health
+Data Licence following completion of the required CITI Program human research
+protection training.
 No additional IRB approval was required for this secondary analysis of
 de-identified records.
 
@@ -1017,12 +1025,9 @@ No funding was received for this work.
 
 \subsection*{Authors' contributions}
 C.F.: Conceptualization, Methodology, Software, Formal analysis, Data
-curation, Writing~-- original draft, Visualization, and manuscript revision.
-H.Y.: Discussion of the proposed research idea, correspondence, and
-coordination of independent clinical review of the manuscript.
-Q.L.: Critical clinical review of the manuscript, expert adjudication of
-the septic shock definition and physiological rigidity framework, and
-supervision of the clinical interpretation.
+curation, Writing -- original draft, Visualization, Writing -- review \& editing.
+H.Y.: Conceptualization, Supervision, Writing -- review \& editing.
+Q.L.: Validation, Supervision, Writing -- review \& editing.
 All authors read and approved the final manuscript.
 
 \subsection*{Code availability}
