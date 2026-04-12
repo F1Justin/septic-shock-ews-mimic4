@@ -41,9 +41,10 @@ from scipy import stats
 warnings.filterwarnings("ignore")
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DB_PATH      = PROJECT_ROOT / "mimiciv" / "mimiciv.db"
-COHORT_PATH  = PROJECT_ROOT / "data" / "cohort.parquet"
-EVENTS_PATH  = PROJECT_ROOT / "data" / "perturbation_events.parquet"
+NAAS_ROOT    = PROJECT_ROOT.parent               # NaaS/  (共享数据在此)
+DB_PATH      = NAAS_ROOT / "mimiciv" / "mimiciv.db"
+COHORT_PATH  = NAAS_ROOT / "data" / "cohort.parquet"
+EVENTS_PATH  = NAAS_ROOT / "data" / "perturbation_events.parquet"
 OUTPUT_DIR   = PROJECT_ROOT / "output"
 SUMMARY_PATH = OUTPUT_DIR / "tableS7_perturbation_summary.csv"
 

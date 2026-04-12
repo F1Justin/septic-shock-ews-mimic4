@@ -17,8 +17,9 @@ import pandas as pd
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DB_PATH = PROJECT_ROOT / "mimiciv" / "mimiciv.db"
-OUTPUT_PATH = PROJECT_ROOT / "data" / "cohort.parquet"
+NAAS_ROOT    = PROJECT_ROOT.parent               # NaaS/  (共享数据在此)
+DB_PATH = NAAS_ROOT / "mimiciv" / "mimiciv.db"
+OUTPUT_PATH = NAAS_ROOT / "data" / "cohort.parquet"
 SENS_PATH = PROJECT_ROOT / "output" / "t0_window_sensitivity.csv"
 FLUID_SENS_PATH = PROJECT_ROOT / "output" / "fluid_threshold_sensitivity.csv"
 

@@ -24,7 +24,8 @@ from statsmodels.genmod.families import Binomial
 from statsmodels.genmod.generalized_estimating_equations import GEE
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DB_PATH = PROJECT_ROOT / "mimiciv" / "mimiciv.db"
+NAAS_ROOT    = PROJECT_ROOT.parent               # NaaS/  (共享数据在此)
+DB_PATH = NAAS_ROOT / "mimiciv" / "mimiciv.db"
 LOG_DIR = PROJECT_ROOT / "logs"
 OUTPUT_DIR = PROJECT_ROOT / "output"
 LOG_FILE = LOG_DIR / "08_cluster_sensitivity.log"
@@ -115,9 +116,9 @@ caption { font-size: 14px; font-weight: bold; margin-bottom: 6px; text-align: le
 
 
 def load_ews_features() -> pd.DataFrame:
-    wins = pd.read_parquet(PROJECT_ROOT / "data" / "ews_windows.parquet")
-    pstats = pd.read_parquet(PROJECT_ROOT / "data" / "ews_patient_stats.parquet")
-    cohort = pd.read_parquet(PROJECT_ROOT / "data" / "cohort.parquet").drop_duplicates(["stay_id", "T0"])
+    wins = pd.read_parquet(NAAS_ROOT / "data" / "ews_windows.parquet")
+    pstats = pd.read_parquet(NAAS_ROOT / "data" / "ews_patient_stats.parquet")
+    cohort = pd.read_parquet(NAAS_ROOT / "data" / "cohort.parquet").drop_duplicates(["stay_id", "T0"])
 
     late = (
         wins[
@@ -364,7 +365,7 @@ def analysis_bootstrap(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def analysis_conditional_logistic(df: pd.DataFrame) -> pd.DataFrame:
-    cohort = pd.read_parquet(PROJECT_ROOT / "data" / "cohort.parquet")
+    cohort = pd.read_parquet(NAAS_ROOT / "data" / "cohort.parquet")
     pair_df = cohort[["stay_id", "T0", "matched_pair_id"]].drop_duplicates(["stay_id", "T0"])
     df2 = df.merge(pair_df, on=["stay_id", "T0"], how="left").copy()
     df2 = df2.dropna(subset=["matched_pair_id", "ac1_hr_late_mean"])

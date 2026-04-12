@@ -67,8 +67,9 @@ from pathlib import Path
 import duckdb
 import sys
 
+# ac1/ 运行时 cwd = ac1/，mimiciv/ 和 data/ 在上一级 NaaS/
 root = Path.cwd()
-db_path = root / "mimiciv" / "mimiciv.db"
+db_path = root.parent / "mimiciv" / "mimiciv.db"
 if not db_path.exists():
     sys.exit(1)
 

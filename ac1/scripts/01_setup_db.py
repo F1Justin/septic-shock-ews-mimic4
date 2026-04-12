@@ -15,9 +15,10 @@ from pathlib import Path
 
 # ── 路径配置 ──────────────────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).parent.parent
-DB_PATH      = PROJECT_ROOT / "mimiciv" / "mimiciv.db"
-DATA_DIR     = PROJECT_ROOT / "mimiciv" / "3.1"
-SQL_DIR      = PROJECT_ROOT / "mimic-code-ref" / "mimic-iv" / "concepts_duckdb"
+NAAS_ROOT    = PROJECT_ROOT.parent               # NaaS/  (共享数据在此)
+DB_PATH      = NAAS_ROOT / "mimiciv" / "mimiciv.db"
+DATA_DIR     = NAAS_ROOT / "mimiciv" / "3.1"
+SQL_DIR      = NAAS_ROOT / "mimic-code-ref" / "mimic-iv" / "concepts_duckdb"
 
 # ── sepsis3 最小依赖链 (保持 duckdb.sql 中的原始顺序) ─────────────────────────
 SEPSIS3_CHAIN = [
@@ -124,7 +125,7 @@ def setup_raw_views(con: duckdb.DuckDBPyConnection) -> None:
     print(f"  [OK] raw views created")
 
 
-CHECKPOINT_FILE = PROJECT_ROOT / "data" / ".setup_checkpoint"
+CHECKPOINT_FILE = NAAS_ROOT / "data" / ".setup_checkpoint"
 
 
 def load_checkpoint() -> set:

@@ -41,11 +41,12 @@ warnings.filterwarnings("ignore", category=RuntimeWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 
 PROJECT_ROOT = Path(__file__).parent.parent
-COHORT_PATH = PROJECT_ROOT / "data" / "cohort.parquet"
-VITALS_PATH = PROJECT_ROOT / "data" / "vitals_cleaned.parquet"
-DIAG_PATH = PROJECT_ROOT / "data" / "cleaning_diagnostics.parquet"
-WINDOWS_PATH = PROJECT_ROOT / "data" / "ews_windows.parquet"
-STATS_PATH = PROJECT_ROOT / "data" / "ews_patient_stats.parquet"
+NAAS_ROOT    = PROJECT_ROOT.parent               # NaaS/  (共享数据在此)
+COHORT_PATH = NAAS_ROOT / "data" / "cohort.parquet"
+VITALS_PATH = NAAS_ROOT / "data" / "vitals_cleaned.parquet"
+DIAG_PATH = NAAS_ROOT / "data" / "cleaning_diagnostics.parquet"
+WINDOWS_PATH = NAAS_ROOT / "data" / "ews_windows.parquet"
+STATS_PATH = NAAS_ROOT / "data" / "ews_patient_stats.parquet"
 OUTPUT_DIR = PROJECT_ROOT / "output"
 
 WINDOW_SIZE = 12

@@ -26,7 +26,8 @@ from matplotlib.ticker import MultipleLocator
 
 # ── paths ──────────────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
-DATA_PATH = ROOT / "data" / "ews_windows.parquet"
+NAAS_ROOT = ROOT.parent                          # NaaS/  (共享数据在此)
+DATA_PATH = NAAS_ROOT / "data" / "ews_windows.parquet"
 OUT_DIR   = ROOT / "output"
 
 # ── constants (must match 04_ews_analysis.py) ──────────────────────────────

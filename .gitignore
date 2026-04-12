@@ -10,14 +10,24 @@ mimic-code-ref/
 重要文献/
 审查报告/
 
-# ── Local-only: cover letter, STROBE checklist, meeting slides (keep on disk, not on GitHub) ──
-submission/
+# ── AC1 sub-project: local-only or generated files ──
+ac1/submission/
+ac1/logs/
+ac1/output/old/
+ac1/sn-article-template/
+ac1/report.pdf
+ac1/report_zh.*
+ac1/manuscript_*.zip
 meeting/
 
-# ── Old / experimental results ──
-output/old/
+# ── Euler EWS sub-project: generated outputs and compiled PDFs (not for main repo) ──
+euler_ews/output/
+euler_ews/manuscript/*.pdf
+euler_ews/manuscript/*.aux
+euler_ews/manuscript/*.log
+euler_ews/manuscript/*.out
 
-# ── LaTeX build artifacts ──
+# ── LaTeX build artifacts (project-wide) ──
 *.aux
 *.fdb_latexmk
 *.fls
@@ -32,23 +42,13 @@ output/old/
 *.vrb
 *.run.xml
 
-# ── Regenerated PDFs (compile from .tex; keeps diffs small on GitHub) ──
-report.pdf
+# ── Other regenerated or draft files ──
 cover_letter.pdf
 strobe_checklist.pdf
 meeting_slides.pdf
 zh-report.pdf
 *_副本.pdf
-
-# ── Draft / duplicate manuscript (keep locally if needed) ──
 report_副本.tex
-
-# ── Journal submission template (large; download Springer Nature template separately) ──
-sn-article-template/
-
-# ── Chinese manuscript version (optional local copy) ──
-report_zh.*
-zh-report.*
 
 # ── Python ──
 __pycache__/

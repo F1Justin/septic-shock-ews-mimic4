@@ -34,10 +34,11 @@ import numpy as np
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DB_PATH      = PROJECT_ROOT / "mimiciv" / "mimiciv.db"
-COHORT_PATH  = PROJECT_ROOT / "data" / "cohort.parquet"
-VITALS_PATH  = PROJECT_ROOT / "data" / "vitals_cleaned.parquet"
-DIAG_PATH    = PROJECT_ROOT / "data" / "cleaning_diagnostics.parquet"
+NAAS_ROOT    = PROJECT_ROOT.parent               # NaaS/  (共享数据在此)
+DB_PATH      = NAAS_ROOT / "mimiciv" / "mimiciv.db"
+COHORT_PATH  = NAAS_ROOT / "data" / "cohort.parquet"
+VITALS_PATH  = NAAS_ROOT / "data" / "vitals_cleaned.parquet"
+DIAG_PATH    = NAAS_ROOT / "data" / "cleaning_diagnostics.parquet"
 
 # itemids
 MAP_ABP_ID = 220052   # Arterial BP mean (有创)
