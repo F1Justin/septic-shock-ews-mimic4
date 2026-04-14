@@ -1,0 +1,916 @@
+% ================================================================
+%  Topological EWS Manuscript — medRxiv preprint
+%  Compile: pdflatex euler_ews_medrxiv.tex (twice for references)
+% ================================================================
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{rotating}
+\usepackage{lineno}
+
+\doublespacing
+\linenumbers
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+
+% ── title block ──────────────────────────────────────────────────
+\title{\textbf{Heart rate oscillatory complexity is associated with septic
+shock in two matched ICU cohorts}}
+
+\author{
+  Chengyi Fang$^{1}$ \and
+  Haiping Yu$^{2,*}$ \and
+  Qiancheng Luo$^{3,*}$
+}
+
+\date{
+  $^1$Tongji University School of Medicine, Shanghai, China \\
+  $^2$Department of Nursing, Pudong Gongli Hospital,
+       Shanghai University of Medicine \& Health Sciences, Shanghai, China \\
+  $^3$Department of Critical Care Medicine, Pudong Gongli Hospital,
+       Shanghai University of Medicine \& Health Sciences, Shanghai, China \\[6pt]
+  $^*$Co-corresponding authors \\[6pt]
+  \textbf{Correspondence:}
+  pingping670@sina.com (H.Y.); luoqiancheng19@163.com (Q.L.) \\[6pt]
+  \textit{Preprint deposited on medRxiv. Not peer-reviewed.} \\[4pt]
+  \textbf{Keywords:} Euler characteristic, topological data analysis,
+  septic shock, early warning signal, heart rate variability,
+  MIMIC-IV, eICU-CRD, sample entropy, oscillatory complexity
+}
+
+\begin{document}
+\maketitle
+
+% ================================================================
+\begin{abstract}
+Septic shock carries in-hospital mortality exceeding 40\%, yet
+early-warning tools do not capture the loss of cardiovascular oscillatory
+flexibility preceding vasopressor initiation.
+We studied two topological heart rate (HR) complexity indicators---Euler
+characteristic ($\chi_{\text{HR}}(0)$) and local-extrema count
+($N_{\text{extrema}}$)---in a 1:2 matched MIMIC-IV cohort (725 shock,
+1,447 controls) with external validation in eICU-CRD (587 pairs).
+Both indicators declined in shock patients from 24\,h before vasopressor
+initiation.
+$N_{\text{extrema}}$ was associated with shock
+(OR\,=\,0.88, 95\%\,CI 0.82--0.94; $p<0.001$), unchanged after adjusting
+for concurrent mean HR and MAP (OR\,=\,0.87; $p<0.001$), and replicated
+in eICU-CRD at $T_0\geq 72$\,h (OR\,=\,0.80, 0.65--0.98; $p=0.034$).
+Lag-1 autocorrelation lost significance after mean adjustment
+(OR\,=\,1.23; $p=0.271$), and sample entropy was non-significant without
+adjustment (OR\,=\,0.86; $p=0.178$).
+$N_{\text{extrema}}$ is mean-level-robust and replicable across ICU
+settings; $\chi_{\text{HR}}(0)$ shows a supportive but partially
+attenuated association after mean adjustment.
+Both indicators are parameter-free and computable from routine hourly
+EHR charting.
+\end{abstract}
+
+% ================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Septic shock complicates one in three ICU sepsis admissions and carries
+in-hospital mortality exceeding 40\% despite modern management
+\cite{singer2016}.
+Existing severity scores (SOFA, APACHE) and threshold-based vital-sign
+alerts quantify haemodynamic derangement but do not measure
+cardiovascular \emph{regulatory capacity}---the oscillatory flexibility
+of the heart rate (HR) that erodes in the hours before vasopressor
+initiation \cite{scheffer2009}.
+Capturing this erosion could enable earlier intervention in a condition
+where every hour of delayed treatment worsens outcome.
+
+Critical slowing down (CSD) theory predicts that a system near collapse
+recovers more slowly from small perturbations, producing a signature of
+rising lag-1 autocorrelation (AC1) and increasing variance
+\cite{scheffer2009,dakos2012}.
+Applied to hourly ICU vital signs, CSD-derived AC1 has shown associations
+with clinical deterioration \cite{olderikkert2016,khalil2025}, yet its
+independence from concurrent mean-level changes has not been rigorously
+tested.
+Entropy-based heart rate variability (HRV) metrics---sample entropy (SampEn)
+and multiscale entropy (MSE)---quantify oscillatory irregularity and carry
+prognostic information in critical illness \cite{moorman2011,lake2002,bravi2012},
+but they require careful parameter selection (template length $m$, tolerance $r$)
+and produce high rates of undefined values when applied to the sparse,
+hourly EHR time series that are the standard of routine clinical monitoring.
+
+Topological data analysis (TDA) characterises the \emph{shape} of a signal
+through algebraic invariants that are robust to monotone rescaling and
+require no free parameters \cite{edelsbrunner2010}.
+For a locally detrended HR residual series, the Euler characteristic of
+the sublevel-set filtration at threshold~0---denoted $\chi_{\text{HR}}(0)$---
+counts the number of connected below-mean segments; it is equivalent to the
+number of oscillatory excursions through the local mean and is computable in
+$O(n)$ from as few as six observations per window.
+The related local-extrema count ($N_{\text{extrema}}$) tallies directional
+reversals without any threshold assumption, making it structurally
+robust to mean-level shifts by construction.
+To our knowledge, neither metric has been applied to ICU vital-sign
+early-warning signals.
+
+Here we report a matched-cohort study with three aims: (i)~to determine
+whether $\chi_{\text{HR}}(0)$ and $N_{\text{extrema}}$ are associated with
+late-onset septic shock in a large MIMIC-IV discovery cohort; (ii)~to test
+whether these associations survive rigorous adjustment for concurrent mean
+HR and MAP---the critical test of mean-level confounding independence;
+and (iii)~to compare topological indicators against lag-1 autocorrelation
+and sample entropy using parallel comparator analyses within the same
+modeling framework, with external validation in eICU-CRD.
+
+% ================================================================
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Data source and ethical considerations}
+MIMIC-IV version 3.1 \cite{johnson2023} was accessed under PhysioNet Data
+Use Agreement (GDOC-2010-0024).
+All ICU stays within MIMIC-IV are de-identified; no additional ethical approval
+was required.
+Derived concepts (Sepsis-3, SOFA, vasopressor equivalents) were generated
+using the MIT \texttt{mimic-code} DuckDB pipeline \cite{johnson2023}.
+
+\subsection{Cohort construction}
+\label{sec:cohort}
+Full cohort construction details are reported in Fang et al.\ \cite{fang2026};
+we briefly summarise the key steps.
+
+From 94,458 MIMIC-IV ICU stays, 41,296 met Sepsis-3 criteria
+\cite{singer2016}.
+An operational septic shock definition was applied:
+vasopressor initiation with lactate $>$2\,mmol/L ($\pm$24\,h),
+vasopressor duration~$\geq$1\,h, and isotonic crystalloid~$\geq$1\,L in the
+preceding 24\,h, yielding 10,310 shock stays.
+The vasopressor start time was designated $T_0$.
+
+Risk-set matching (1:2 ratio, admission SOFA\,$\pm$2, seed 42) produced 725
+shock and 1,450 control (stay,\,$T_0$) pairs.
+Controls were drawn from a dynamic risk set of Sepsis-3 stays with
+ICU duration~$\geq H$\,h whose own shock onset (if any) fell after~$H$.
+After time-series cleaning (see below), 2,172 (stay,\,$T_0$) observations
+remained analysable (725 shock, 1,447 control) across 725 matched strata.
+
+\subsection{Time-series preprocessing}
+Hourly MAP (ABPm preferred over NBPm) and HR were extracted for
+72\,h before each $T_0$.
+Preprocessing followed the pipeline of Fang et al.\ \cite{fang2026}:
+physiological-range filtering, 1-hour median resampling, causal 24-hour
+trailing-mean detrending (the first 24\,h serving as burn-in only),
+$\pm3\sigma$ outlier replacement, and exclusion of stays with
+$<$24 actual observations in the final 48-hour analysis window.
+
+\subsection{Topological indicators}
+\label{sec:topo}
+
+Two topological indicators of HR regulatory complexity were computed over
+12-hour rolling windows (1-hour step) of the HR residual series,
+using only non-interpolated, paired observations.
+Windows with fewer than 6 actual observations were excluded.
+
+\paragraph{Euler characteristic $\chi_{\text{HR}}(0)$.}
+Let $r_1, r_2, \ldots, r_n$ denote the HR residual values (in temporal order)
+at non-interpolated time points within a 12-hour window.
+The sublevel set at threshold~0 is the discrete index set
+$S_0 = \{i : r_i \leq 0\}$.
+Its Euler characteristic equals the number of connected components of $S_0$:
+\begin{equation}
+  \chi_{\text{HR}}(0)
+  = \mathbf{1}[r_1 \leq 0]
+    + \sum_{i=2}^{n} \mathbf{1}[r_{i-1} > 0 \text{ and } r_i \leq 0].
+  \label{eq:euler}
+\end{equation}
+This quantity counts the number of times HR crosses below its local trend
+in each window.
+A value of~0 indicates HR remains persistently above its trend (unrelenting
+tachycardia without corrective return); a value of~1 indicates HR is
+persistently below (bradycardic drift); higher values indicate frequent
+oscillation through the trend level, reflecting preserved homeostatic
+flexibility.
+
+\paragraph{Oscillatory extrema count $N_{\text{extrema}}$.}
+The number of local minima plus local maxima (using first-order neighbours)
+in the non-interpolated HR residual sequence within each window.
+This metric directly counts the number of reversal events,
+complementing~$\chi(0)$ as an oscillatory complexity indicator.
+
+\subsection{Sample entropy comparator metric}
+\label{sec:sampen-method}
+
+Sample entropy (SampEn) was computed as a comparator complexity metric.
+For each 12-hour HR residual window, SampEn with template length $m=1$
+was calculated using tolerance $r = 0.5 \times \sigma_{48}$, where
+$\sigma_{48}$ is the standard deviation of the patient's full 48-hour
+HR residual series, pre-computed once per patient and held constant
+across all windows.
+This patient-level reference follows the recommendation of Richman and
+Moorman \cite{richman2000} to anchor $r$ to global signal variability.
+Windows with fewer than~8 non-interpolated observations were excluded
+(NaN rate 1.1\% at $r=0.5$; the standard $r=0.2$ yields 15.2\% NaN,
+because the short 12-point window produces zero length-2 template
+matches [$A=0$]).
+An $m=2$ sensitivity analysis is reported in Supplementary Table~S1.
+
+\subsection{External validation cohort (eICU-CRD)}
+\label{sec:eicu-method}
+
+The eICU Collaborative Research Database v2.0 (eICU-CRD)
+\cite{pollard2018} was accessed under PhysioNet Data Use Agreement.
+eICU-CRD covers 335 US ICUs participating in a telehealth critical care
+programme.
+The identical operational septic shock definition and $T_0$ assignment
+were applied, yielding a 1:1 matched cohort (SOFA\,$\pm$2 risk-set
+matching, seed 114514) of 587 matched pairs (587 shock, 587 control).
+Time-series preprocessing and topological indicator computation
+($\chi_{\text{HR}}(0)$, $N_{\text{extrema}}$, SampEn) followed the
+same pipeline as MIMIC-IV.
+The early window was defined as [$-$24,\,$-$12)\,h before $T_0$
+(median $T_0$ observation window in eICU-CRD is approximately 24\,h,
+precluding the [$-$48,\,$-$24)\,h definition used in MIMIC-IV);
+the late window ($-12$ to $<$0\,h) was identical.
+To account for the short and variable $T_0$ observation windows in
+eICU-CRD, a T0-stratified sensitivity analysis was conducted:
+associations were estimated separately in subsets with $\geq$24,
+$\geq$48, and $\geq$72\,h of HR observations before $T_0$, since
+signal accumulation requires sufficient observation time.
+This analysis is post-hoc and exploratory.
+
+\subsection{Statistical analysis}
+\label{sec:stats}
+
+For MIMIC-IV, patient-level summaries were computed as window means
+within the \emph{early} window (window-centre $-48$ to $-24$\,h before
+$T_0$) and \emph{late} window ($-12$ to $<0$\,h before $T_0$), and their
+within-patient late-minus-early difference ($\Delta$).
+For eICU-CRD, the early window was $-24$ to $-12$\,h (as specified
+in Section~\ref{sec:eicu-method}); the late window was identical.
+
+\paragraph{Between-group comparisons.}
+Gaussian generalised estimating equations (GEE) \cite{liang1986} with
+exchangeable within-cluster correlation and \texttt{stay\_id} clustering
+were used for early, late, and $\Delta$ summaries.
+All comparisons were subjected to global Holm--Bonferroni correction across
+all metrics and time windows simultaneously ($6 \times 3 = 18$ tests total).
+
+\paragraph{Temporal trend.}
+Linear mixed-effects models (LMM) with form
+$\texttt{indicator} \sim \texttt{time} \times \texttt{group}
++ (1 + \texttt{time} \mid \texttt{pair})$
+were fitted over the full 48-hour window (time centred at $-24$\,h).
+The time-by-group interaction coefficient~$\beta$ quantifies divergence
+in trajectories between shock and control groups.
+
+\paragraph{Conditional logistic regression.}
+To estimate adjusted associations, conditional logistic regression stratified
+by \texttt{matched\_pair\_id} was fitted with predictors:
+(i)~late-window $\chi_{\text{HR}}(0)$ mean (primary predictor);
+(ii)~invasive mechanical ventilation at the late-window start ($-12$\,h);
+(iii)~sedative exposure in the prior 12\,h;
+(iv)~beta-blocker exposure in the prior 12\,h;
+(v)~ICU type (MICU reference); and
+(vi)~monitoring modality (NBP reference).
+Admission SOFA and time-to-event are structurally conditioned out by the
+matched-pair likelihood.
+Results are reported as odds ratios (OR) with 95\% confidence intervals.
+
+\paragraph{Sensitivity analyses.}
+\begin{enumerate}
+  \item[\textbf{S1}]~Additional adjustment for late-window raw mean HR
+    (key test: whether association survives mean-level confounding).
+  \item[\textbf{S2}]~Additional adjustment for late-window raw mean HR
+    and MAP simultaneously.
+  \item[\textbf{S3}]~Early-window $\chi_{\text{HR}}(0)$ as predictor,
+    adjusted for early-window raw mean HR and MAP
+    (specification aligned with the AC1 early-window model in Fang et al.).
+  \item[\textbf{S4}]~$N_{\text{extrema}}$ as primary predictor (base model
+    and with additional late-window HR mean adjustment).
+  \item[\textbf{S5}]~Restriction to pairs without sedative exposure in the
+    prior 12\,h (sedation covariate omitted).
+\end{enumerate}
+
+\paragraph{Comparator analyses.}
+Late-window HR~AC1 was analysed under the same conditional logistic
+framework (M1, S1, S2, S3, S5), reproducing the analysis of Fang
+et al.\ \cite{fang2026} within the same cohort.
+SampEn ($m=1$, $r=0.5 \times \sigma_{48}$) was similarly analysed
+under M1, S1, and S2.
+The slightly smaller AC1 sample ($N=2{,}059$ in M1 versus
+$N=2{,}156$ for Euler models) reflects NaN returns when within-window
+residual variance is insufficient for a well-defined lag-1 correlation,
+not a difference in the minimum-observation criterion.
+Comparisons are therefore across a shared analytical framework but
+not a strictly identical sample.
+
+All analyses were performed in Python 3.14 using \texttt{pandas},
+\texttt{numpy}, \texttt{scipy}, \texttt{statsmodels}, and \texttt{seaborn}.
+Code is available at \url{https://github.com/} [to be added upon publication].
+
+% ================================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Cohort characteristics}
+The MIMIC-IV discovery cohort comprised 2,172 analysable (stay,\,$T_0$)
+observations (725 shock, 1,447 control) from 725 matched strata.
+The shock group had higher in-hospital mortality (56.8\% vs.\ 21.3\%,
+$p<0.001$) and a greater proportion with prior vasopressor exposure
+before $T_0$ (93.2\% vs.\ 41.4\%, $p<0.001$), as expected.
+Median age (65 vs.\ 63 years), sex (56.7\% vs.\ 59.6\% male), and
+admission SOFA (6 [4--9] vs.\ 6 [4--8]) were comparable across matched
+strata.
+The eICU-CRD validation cohort comprised 587 matched pairs (587 shock,
+587 control); full baseline characteristics for both cohorts are reported
+in the companion paper \cite{fang2026}.
+
+\subsection{Between-group comparisons of topological indicators}
+\label{sec:res-gee}
+
+Table~\ref{tab:gee} and Figure~\ref{fig:timeseries} summarise between-group
+comparisons after global Holm correction.
+
+\paragraph{HR Euler characteristic $\chi_{\text{HR}}(0)$.}
+In the early window, $\chi_{\text{HR}}(0)$ was already significantly lower
+in shock patients (mean 1.75 vs.\ 1.86; Holm $p=0.020$).
+The difference was larger in the late window (1.62 vs.\ 1.89;
+Holm $p<0.001$), and the within-patient late-minus-early change was also
+significantly more negative in shock ($-0.131$ vs.\ $+0.030$;
+Holm $p=0.013$).
+The LMM time-by-group interaction was negative and significant
+($\beta=-0.0053$ per hour, $p=0.006$), indicating a progressive divergence
+between groups over the 48-hour window.
+
+\paragraph{HR extrema count $N_{\text{extrema}}$.}
+Late-window $N_{\text{extrema}}$ was significantly lower in shock
+(5.16 vs.\ 5.53; Holm $p<0.001$), with a significant late-minus-early
+change ($p<0.001$) and LMM interaction ($\beta=-0.0090$, $p=0.004$).
+The early-window difference did not reach significance (Holm $p=1.00$).
+
+\paragraph{MAP indicators.}
+MAP~$\chi(0)$ showed no significant difference at any time point (all Holm
+$p\geq0.574$).
+Normalised total variation for both HR and MAP showed no consistent group
+differences (all Holm $p>0.15$).
+
+\subsection{Conditional logistic regression}
+\label{sec:res-logit}
+
+Table~\ref{tab:logit} presents the conditional logistic results.
+
+\paragraph{$N_{\text{extrema}}$ (primary topological indicator).}
+Lower late-window $N_{\text{extrema}}$ was associated with shock in
+all models and was completely stable across mean-adjustment steps:
+base model OR\,=\,0.88 (95\%\,CI 0.82--0.94), $p<0.001$
+($N=2{,}156$; 720 informative strata);
+additionally adjusted for late-window raw mean HR,
+OR\,=\,0.88 (0.82--0.94), $p<0.001$;
+additionally adjusted for both late-window raw mean HR and MAP,
+OR\,=\,0.87 (0.81--0.94), $p<0.001$.
+In the no-sedation subgroup (S5), the association strengthened:
+OR\,=\,0.79 (0.67--0.93), $p=0.004$ ($N=544$; 218 strata).
+
+\paragraph{$\chi_{\text{HR}}(0)$ (secondary topological indicator).}
+Lower late-window $\chi_{\text{HR}}(0)$ was also associated with shock:
+base model OR\,=\,0.75 (0.66--0.84), $p<0.001$;
+after adjustment for late-window raw mean HR, OR\,=\,0.79 (0.70--0.89),
+$p<0.001$;
+after further adjustment for raw mean MAP, OR\,=\,0.86 (0.76--0.98),
+$p=0.025$.
+Early-window $\chi_{\text{HR}}(0)$ (S3, adjusted for early-window mean
+HR and MAP) was similarly associated: OR\,=\,0.85 (0.74--0.98),
+$p=0.027$.
+In the no-sedation subgroup, OR\,=\,0.72 (0.58--0.89), $p=0.002$
+($N=544$; 218 strata).
+
+\subsection{Comparison with lag-1 autocorrelation and sample entropy}
+\label{sec:res-comparators}
+
+Figure~\ref{fig:sampenforest} shows the four-indicator comparison across
+M1, S1, and S2 models.
+
+\paragraph{Lag-1 autocorrelation (AC1).}
+Under the identical conditional logistic framework, higher late-window
+HR~AC1 was associated with shock in the base and single-covariate models
+(M1: OR\,=\,1.60 [1.15--2.22], $p=0.005$; S1: OR\,=\,1.49 [1.06--2.08],
+$p=0.021$), but lost significance after additional MAP adjustment
+(S2: OR\,=\,1.23 [0.85--1.78], $p=0.271$) and in the no-sedation
+subgroup (S5: OR\,=\,1.07 [0.59--1.95], $p=0.815$).
+The key contrast is in S2: $N_{\text{extrema}}$ retained significance
+(OR\,=\,0.87, $p<0.001$) and $\chi_{\text{HR}}(0)$ retained significance
+(OR\,=\,0.86, $p=0.025$), while AC1 did not.
+
+\paragraph{Sample entropy.}
+SampEn ($m=1$, $r=0.5\times\sigma_{48}$) was not significantly associated
+with shock in any model: M1 OR\,=\,0.86 (0.69--1.07), $p=0.178$;
+S1 OR\,=\,0.81 (0.64--1.02), $p=0.067$;
+S2 OR\,=\,0.87 (0.68--1.12), $p=0.284$.
+Non-significance was not solely attributable to reduced sample size:
+SampEn M1 ($N=2{,}122$) was comparable to the Euler M1 sample
+($N=2{,}156$), but SampEn confidence intervals were wider, reflecting
+greater between-subject variability.
+At the standard tolerance ($r=0.2\times\sigma_{48}$), 15.2\% of
+late-window SampEn values were undefined (versus 0.3\% for
+$N_{\text{extrema}}$), because the 12-point window yields zero
+length-2 template matches ($A=0$); relaxing to $r=0.5$ reduced the
+NaN rate to 1.1\% but did not produce significant associations.
+
+\subsection{External validation in eICU-CRD}
+\label{sec:res-eicu}
+
+Table~\ref{tab:eicu} shows the T0-stratified external validation results
+in eICU-CRD (587 matched pairs).
+In the full cohort, no indicator reached significance, consistent with
+the short median $T_0$ observation window ($\approx$24\,h) in eICU-CRD
+that limits early-window signal accumulation.
+In the subset with $T_0 \geq 72$\,h before vasopressor initiation
+(103 pairs, 100 informative strata), $N_{\text{extrema}}$ was
+significantly associated with shock (OR\,=\,0.80, 95\%\,CI 0.65--0.98;
+$p=0.034$), closely replicating the MIMIC-IV estimate (OR\,=\,0.88;
+$p<0.001$).
+$\chi_{\text{HR}}(0)$ showed a consistent direction (OR\,=\,0.72,
+0.50--1.04; $p=0.084$) but did not reach the pre-specified $\alpha=0.05$
+threshold.
+SampEn showed no consistent direction and was non-significant at all
+$T_0$ thresholds (OR\,=\,1.17 at $T_0\geq 72$\,h; $p=0.625$).
+AC1, although numerically elevated at $T_0\geq 72$\,h
+(OR\,=\,2.68, 0.88--8.12; $p=0.082$), had wide confidence intervals
+reflecting the small stratum count.
+
+% ================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+In two independent ICU cohorts, reduced topological complexity of hourly
+heart rate---specifically the local-extrema count $N_{\text{extrema}}$---was
+associated with late-onset septic shock before vasopressor initiation.
+$N_{\text{extrema}}$ was the most robust indicator: its association in
+MIMIC-IV (OR\,=\,0.88; $p<0.001$) was completely unchanged after adjusting
+for concurrent mean HR and MAP, and it replicated in eICU-CRD at
+$T_0\geq 72$\,h (OR\,=\,0.80; $p=0.034$).
+The Euler characteristic $\chi_{\text{HR}}(0)$ showed a stronger unadjusted
+association (OR\,=\,0.75) that partially attenuated with full mean adjustment
+(OR\,=\,0.86), indicating some overlap with mean-level deterioration.
+To our knowledge, this is the first application of sublevel-set Euler
+characteristic analysis to ICU vital-sign early-warning signals; prior TDA
+work in medicine has focused on persistent homology of ECG waveforms
+\cite{chung2021} rather than hourly EHR time series.
+
+The physiological substrate is progressive failure of autonomic cardiovascular
+regulation in evolving sepsis \cite{decastilho2018,carrara2021}.
+Under normal conditions, HR oscillates bidirectionally around its local trend
+through sympathetic--parasympathetic interplay; $N_{\text{extrema}}$ and
+$\chi_{\text{HR}}(0)$ directly index this bidirectionality.
+As septic physiology evolves---through autonomic neuropathy, catecholamine
+desensitisation, and microcirculatory failure---HR loses these reversals and
+becomes persistently elevated with fewer oscillatory crossings.
+Critically, this structural loss is separable from simple tachycardia:
+$N_{\text{extrema}}$ was unchanged after adjusting for mean HR (OR\,=\,0.88,
+$p<0.001$), and it remained significant in patients not receiving sedatives
+(OR\,=\,0.79, $p=0.004$), arguing against sedation confounding as the
+primary driver.
+This finding is consistent with the broader HRV literature showing that
+complexity measures provide prognostic information beyond the HR level
+in critical illness \cite{moorman2011}.
+
+The differential behaviour of AC1 and topological indicators under mean
+adjustment illuminates a key limitation of the critical slowing down
+framework as applied to clinical vital signs.
+AC1 measures autocorrelation persistence---a property that co-varies with
+the process mean when sustained tachycardia is the dominant signal: HR
+remaining above its detrended mean for extended runs inflates AC1.
+After adjusting for this mean shift (S2 model), AC1 lost significance
+(OR\,=\,1.23; $p=0.271$), and was non-significant in the no-sedation
+subgroup and in eICU-CRD, suggesting its apparent signal was largely
+a proxy for overt haemodynamic deterioration rather than an independent
+structural feature.
+$N_{\text{extrema}}$ and $\chi_{\text{HR}}(0)$, by contrast, are computed
+relative to the current trend and therefore remained significant after
+empirical adjustment for the mean level in our data.
+
+Sample entropy also failed to capture an independent association with
+shock (OR\,=\,0.86; $p=0.178$ in the unadjusted model), and showed no
+consistent direction in eICU-CRD (OR\,=\,1.17 at $T_0\geq 72$\,h).
+This failure reflects a structural limitation of standard entropy metrics
+when applied to sparse EHR time series: at the conventional tolerance
+($r=0.2\times$local SD), 15.2\% of 12-hour windows produced undefined
+SampEn values because no length-2 template matches existed within the
+approximately 12 available observations.
+Relaxing $r$ to $0.5\times\sigma_{48}$ reduced NaN rates to 1.1\% but
+did not recover a significant association.
+This highlights a practical advantage of topological indicators for routine
+EHR monitoring: $N_{\text{extrema}}$ and $\chi_{\text{HR}}(0)$ require no
+template parameters, are undefined in fewer than 0.5\% of windows, and are
+interpretable from as few as six observations---conditions routinely met
+in hourly EHR charting.
+
+Several limitations should be noted.
+This analysis is exploratory and hypothesis-generating; neither topological
+indicator had a pre-registered primary hypothesis, and the analysis was
+conducted post-hoc within an existing cohort.
+MIMIC-IV is a single academic centre, and eICU-CRD, while multi-centre,
+represents primarily US academic hospitals with telehealth infrastructure;
+generalisability to community hospitals and non-US settings requires further
+study.
+The early-window definition differs between cohorts (MIMIC-IV:
+$-48$ to $-24$\,h; eICU: $-24$ to $-12$\,h), precluding direct comparison
+of early-window estimates.
+The hourly EHR sampling rate limits observations to approximately 6--12
+per 12-hour window; waveform-resolution data could substantially improve
+precision and enable multiscale analysis.
+The T0-stratified eICU analysis is not a pre-specified primary endpoint
+and should be interpreted with appropriate caution.
+Notwithstanding, the consistent replication of $N_{\text{extrema}}$ in
+eICU-CRD at $T_0\geq 72$\,h, its complete robustness to mean adjustment
+across all sensitivity models, and the structural failure of SampEn on
+sparse EHR data together provide a coherent argument for topological
+indicators as the preferred framework for this application.
+These findings support prospective evaluation of $N_{\text{extrema}}$ and
+$\chi_{\text{HR}}(0)$ as complements to current ICU early-warning systems;
+implementation requires no additional monitoring hardware, and the
+$O(n)$ computation is compatible with real-time clinical deployment.
+
+% ================================================================
+\section*{Declarations}
+
+\paragraph{Data availability.}
+MIMIC-IV v3.1 and eICU-CRD v2.0 are available via PhysioNet
+(\url{https://physionet.org}) under Data Use Agreements.
+Derived (de-identified) intermediate files are available at
+[GitHub link upon publication].
+
+\paragraph{Code availability.}
+All analysis code (Python scripts) is available at
+[GitHub link upon publication].
+
+\paragraph{Funding.}
+No specific funding was received for this exploratory analysis.
+
+\paragraph{Conflicts of interest.}
+None declared.
+
+\paragraph{Author contributions.}
+C.F.: conceptualisation, data curation, formal analysis, methodology,
+writing—original draft.
+H.Y., Q.L.: supervision, writing—review \& editing.
+
+% ================================================================
+\section*{Abbreviations}
+\begin{tabular}{ll}
+  AC1         & Lag-1 autocorrelation \\
+  CSD         & Critical slowing down \\
+  EHR         & Electronic health record \\
+  eICU-CRD    & eICU Collaborative Research Database \\
+  EWS         & Early warning signal \\
+  GEE         & Generalised estimating equations \\
+  HR          & Heart rate \\
+  HRV         & Heart rate variability \\
+  ICU         & Intensive care unit \\
+  LMM         & Linear mixed-effects model \\
+  MAP         & Mean arterial pressure \\
+  MSE         & Multiscale entropy \\
+  OR          & Odds ratio \\
+  SampEn      & Sample entropy \\
+  SOFA        & Sequential Organ Failure Assessment \\
+  TDA         & Topological data analysis \\
+  $\chi(0)$   & Euler characteristic at threshold zero \\
+\end{tabular}
+
+% ================================================================
+\clearpage
+\appendix
+\section*{Appendix: Mathematical Note on Euler Characteristic}
+\label{app:math}
+
+For a discrete one-dimensional signal
+$r = (r_1, \ldots, r_n) \in \mathbb{R}^n$,
+the \emph{sublevel set} at threshold $\lambda$ is
+$S_\lambda = \{i \in \{1,\ldots,n\} : r_i \leq \lambda\}$,
+viewed as a subset of the path graph on $n$ vertices
+(i.e.\ two adjacent vertices $i$ and $i+1$ both in $S_\lambda$
+are connected by an edge).
+The Euler characteristic of $S_\lambda$ is:
+\[
+  \chi(S_\lambda)
+  = \beta_0(S_\lambda) - \beta_1(S_\lambda)
+  = \beta_0(S_\lambda),
+\]
+since a subgraph of a path graph contains no cycles ($\beta_1 = 0$).
+Here $\beta_0(S_\lambda)$ denotes the number of connected components.
+For a path graph, connected components of $S_\lambda$ correspond to
+maximal contiguous runs of indices with $r_i \leq \lambda$.
+Setting $\lambda = 0$ and evaluating equation~(\ref{eq:euler}) follows directly.
+
+The \emph{Euler characteristic curve} $\lambda \mapsto \chi(S_\lambda)$
+is a complete topological summary of $r$ under the sublevel-set filtration
+\cite{edelsbrunner2010}.
+At $\lambda = -\infty$, $\chi = 0$; at each local minimum $r_{\min}$,
+$\chi$ increases by~1 (a new component is born); at each local maximum
+$r_{\max}$, $\chi$ decreases by~1 (two components merge); at
+$\lambda = +\infty$, $\chi = 1$ (one connected component).
+Our scalar $\chi_{\text{HR}}(0)$ is simply the evaluation of this curve
+at the physiologically meaningful threshold of zero (the detrended mean),
+rendering it directly interpretable as the count of below-mean oscillatory
+excursions.
+
+% ================================================================
+\clearpage
+
+\begin{table}[htbp]
+\centering
+\caption{Between-group comparisons of topological indicators (GEE,
+Gaussian family, exchangeable correlation, \texttt{stay\_id} clustering).
+$p$-values are Holm--Bonferroni corrected globally across all 18 tests
+(6 metrics $\times$ 3 time summaries).
+Values are group means.}
+\label{tab:gee}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccccc}
+\toprule
+& \multicolumn{3}{c}{\textbf{Early window}} & \multicolumn{3}{c}{\textbf{Late window}} & \multicolumn{3}{c}{\textbf{$\Delta$ (late$-$early)}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+\textbf{Indicator} & Shock & Control & Holm $p$ & Shock & Control & Holm $p$ & Shock & Control & Holm $p$ \\
+\midrule
+HR $\chi(0)$        & 1.75 & 1.86 & 0.020   & 1.62 & 1.89 & $<$0.001 & $-$0.131 & $+$0.030 & 0.013 \\
+HR $N_{\text{ext}}$ & 5.48 & 5.52 & 1.000   & 5.16 & 5.53 & $<$0.001 & $-$0.315 & $+$0.020 & $<$0.001 \\
+MAP $\chi(0)$       & 2.39 & 2.35 & 1.000   & 2.28 & 2.33 & 1.000    & $-$0.107 & $-$0.017 & 0.574 \\
+MAP $N_{\text{ext}}$& 6.06 & 5.98 & 0.964   & 5.73 & 5.92 & 0.055    & $-$0.338 & $-$0.066 & 0.012 \\
+HR total var$^\dag$ & 55.1 & 57.9 & 0.562   & 56.1 & 57.8 & 1.000    & $+$1.01  & $-$0.04  & 1.000 \\
+MAP total var$^\dag$& 78.4 & 82.9 & 0.150   & 80.9 & 83.4 & 1.000    & $+$2.52  & $+$0.52  & 1.000 \\
+\midrule
+LMM interaction & \multicolumn{3}{c}{HR $\chi(0)$: $\beta=-0.0053$, $p=0.006$} &
+\multicolumn{3}{c}{HR $N_{\text{ext}}$: $\beta=-0.0090$, $p=0.004$} &
+\multicolumn{3}{c}{MAP: all $p>0.05$} \\
+\bottomrule
+\end{tabular}}
+\vspace{2pt}\\
+\raggedright
+\footnotesize $^\dag$ Normalised total variation: $\sum|\Delta r| / (n_{\text{actual}}-1)$.
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Conditional logistic regression results (stratified by
+\texttt{matched\_pair\_id}).
+Primary predictor: late-window HR $\chi(0)$ mean (models M1--S3, S5)
+or $N_{\text{extrema}}$ (models S4, S4b).
+Comparator: late-window HR AC1 under identical specifications.
+OR\,$<$1 for $\chi(0)$ and $N_{\text{extrema}}$ corresponds to lower
+topological complexity associated with higher shock odds.}
+\label{tab:logit}
+\small
+\begin{tabular}{llccc}
+\toprule
+\textbf{Model} & \textbf{Predictor} & \textbf{N} & \textbf{OR (95\% CI)} & \textbf{$p$} \\
+\midrule
+\multicolumn{5}{l}{\textit{HR Euler $\chi(0)$ — primary and sensitivity analyses}} \\
+M1 Base model            & $\chi_{\text{HR}}(0)$ late       & 2,156 & 0.75 (0.66--0.84) & $<$0.001 \\
+S1 + late raw HR mean    & $\chi_{\text{HR}}(0)$ late       & 2,156 & 0.79 (0.70--0.89) & $<$0.001 \\
+S2 + late raw HR + MAP   & $\chi_{\text{HR}}(0)$ late       & 2,138 & 0.86 (0.76--0.98) & 0.025    \\
+S3 Early window$^a$      & $\chi_{\text{HR}}(0)$ early      & 2,171 & 0.85 (0.74--0.98) & 0.027    \\
+S4 $N_{\text{extrema}}$ base & $N_{\text{extrema}}$ late    & 2,156 & 0.88 (0.82--0.94) & $<$0.001 \\
+S4b + late raw HR mean   & $N_{\text{extrema}}$ late        & 2,156 & 0.88 (0.82--0.94) & $<$0.001 \\
+S5 No-sedation subgroup  & $\chi_{\text{HR}}(0)$ late       &   544 & 0.72 (0.58--0.89) & 0.002    \\
+\midrule
+\multicolumn{5}{l}{\textit{HR AC1 — comparator under identical framework}} \\
+M1 Base model            & AC1 late           & 2,059 & 1.60 (1.15--2.22) & 0.005    \\
+S1 + late raw HR mean    & AC1 late           & 2,059 & 1.49 (1.06--2.08) & 0.021    \\
+S2 + late raw HR + MAP   & AC1 late           & 2,041 & 1.23 (0.85--1.78) & 0.271    \\
+S3 Early window$^a$      & AC1 early          & 2,155 & 1.11 (0.73--1.69) & 0.618    \\
+S5 No-sedation subgroup  & AC1 late           &   526 & 1.07 (0.59--1.95) & 0.815    \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}\\
+\raggedright
+\footnotesize $^a$ S3 additionally adjusts for early-window raw mean HR and MAP
+(aligned with the early-window AC1 specification in Fang et al.\ \cite{fang2026}).
+All models include: invasive ventilation at $-12$\,h, sedative exposure
+(omitted in S5), beta-blocker exposure, ICU type, and monitoring modality.
+\end{table}
+
+\begin{sidewaystable}[htbp]
+\centering
+\caption{External validation: T0-stratified conditional logistic regression
+in eICU-CRD (1:1 matched cohort).
+$T_0$-stratified subsets restrict to pairs with $\geq H$\,h of HR
+observations before vasopressor initiation.
+MIMIC-IV row shown for reference (M1 model specification).
+$T_0$-stratified analysis is post-hoc and exploratory.}
+\label{tab:eicu}
+\small
+\begin{tabular}{lcccccccc}
+\toprule
+& \multicolumn{2}{c}{\textbf{$N_{\text{extrema}}$}}
+& \multicolumn{2}{c}{\textbf{Euler $\chi(0)$}}
+& \multicolumn{2}{c}{\textbf{SampEn}}
+& \multicolumn{2}{c}{\textbf{AC1}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
+\textbf{Subset ($N$ pairs)} & OR (95\%CI) & $p$ & OR (95\%CI) & $p$
+& OR (95\%CI) & $p$ & OR (95\%CI) & $p$ \\
+\midrule
+\multicolumn{9}{l}{\textit{eICU-CRD}} \\
+Full cohort (587)  & 0.94 (0.86--1.02) & 0.142 & 0.97 (0.81--1.16) & 0.756 & 1.00 (0.76--1.31) & 0.978 & 1.21 (0.75--1.97) & 0.435 \\
+$T_0\geq 24$\,h (297) & 0.96 (0.86--1.07) & 0.455 & 1.02 (0.81--1.29) & 0.852 & 1.04 (0.72--1.52) & 0.819 & 1.50 (0.78--2.90) & 0.224 \\
+$T_0\geq 48$\,h (154) & 0.92 (0.78--1.07) & 0.281 & 0.84 (0.62--1.14) & 0.262 & 1.14 (0.67--1.96) & 0.628 & 1.21 (0.50--2.93) & 0.673 \\
+$T_0\geq 72$\,h (103)$^\star$ & \textbf{0.80 (0.65--0.98)} & \textbf{0.034} & 0.72 (0.50--1.04) & 0.084 & 1.17 (0.62--2.21) & 0.625 & 2.68 (0.88--8.12) & 0.082 \\
+\midrule
+\multicolumn{9}{l}{\textit{MIMIC-IV (reference)}} \\
+Full cohort (725) & 0.88 (0.82--0.94) & $<$0.001 & 0.75 (0.66--0.84) & $<$0.001 & 0.86 (0.69--1.07) & 0.178 & 1.60 (1.15--2.22) & 0.005 \\
+\bottomrule
+\end{tabular}
+\vspace{2pt}\\
+\raggedright
+\footnotesize $^\star$ T0-stratified analysis is post-hoc exploratory; interpret with caution.
+eICU-CRD covariates: invasive ventilation, sedative exposure, beta-blocker exposure,
+and arterial line monitoring (ICU type absorbed by 1:1 matching and excluded).
+SampEn: $m=1$, $r=0.5\times\sigma_{48}$. AC1 eICU sample slightly smaller
+(full cohort $N=1{,}102$) due to NaN from insufficient within-window variance.
+\end{sidewaystable}
+
+% ================================================================
+\clearpage
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{%
+    ../output/fig_euler_timeseries.png}
+  \caption{Time series of six topological indicators from $-48$ to $0$\,h
+  relative to $T_0$ (3 rows $\times$ 2 columns).
+  Mean~$\pm$~95\% confidence interval (shaded); LOESS-smoothed trend
+  (solid line).
+  Green dotted line: early/late window boundary ($-24$\,h);
+  orange dotted line: late window start ($-12$\,h);
+  grey dashed line: $T_0$.
+  \textbf{Row 1 (left/right):} MAP Euler $\chi(0)$ and HR Euler $\chi_{\text{HR}}(0)$.
+  \textbf{Row 2:} MAP $N_{\text{extrema}}$ and HR $N_{\text{extrema}}$.
+  \textbf{Row 3:} MAP total variation and HR total variation.
+  HR Euler $\chi_{\text{HR}}(0)$ and HR $N_{\text{extrema}}$ decline
+  progressively in the shock group relative to controls from approximately
+  $-24$\,h onward; MAP indicators and total variation show no consistent
+  group divergence.}
+  \label{fig:timeseries}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{%
+    ../output/fig_euler_vs_ac1_forest.png}
+  \caption{Forest plot comparing OR (95\%\,CI) for HR Euler $\chi(0)$
+  (left panel) and HR AC1 (right panel) across corresponding model
+  specifications.
+  Red symbols indicate $p<0.05$; grey symbols indicate $p\geq0.05$.
+  The key difference is in S2: $\chi(0)$ retains significance after
+  adjustment for both late-window raw mean HR and MAP,
+  whereas AC1 does not.}
+  \label{fig:forest}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\textwidth]{%
+    ../output/fig_sampen_4way_forest.png}
+  \caption{Four-indicator comparison across M1, S1, and S2 model
+  specifications (MIMIC-IV discovery cohort).
+  Panels show OR (95\%\,CI) for HR $N_{\text{extrema}}$ (top left),
+  HR Euler $\chi(0)$ (top right), SampEn $m=1$, $r=0.5\sigma_{48}$
+  (bottom left), and HR AC1 (bottom right).
+  Red symbols indicate $p<0.05$; grey indicate $p\geq0.05$.
+  $N_{\text{extrema}}$ is the only indicator that remains significant
+  across all three model specifications.}
+  \label{fig:sampenforest}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{%
+    ../output/fig_euler_delta.png}
+  \caption{Early-to-late change ($\Delta$) in topological indicators
+  by group.
+  Each panel shows late-minus-early difference for one indicator;
+  horizontal dashed line at~0.
+  Both HR $\chi(0)$ and HR $N_{\text{extrema}}$ show a significantly more
+  negative $\Delta$ in the shock group (Holm $p\leq0.013$), indicating
+  progressive loss of oscillatory complexity approaching shock onset.}
+  \label{fig:delta}
+\end{figure}
+
+% ================================================================
+\bibliographystyle{unsrtnat}
+\begin{thebibliography}{99}
+
+\bibitem{singer2016}
+Singer M, Deutschman CS, Seymour CW, et al.
+The Third International Consensus Definitions for Sepsis and Septic Shock
+(Sepsis-3).
+\textit{JAMA}. 2016;315(8):801--810.
+
+\bibitem{scheffer2009}
+Scheffer M, Bascompte J, Brock WA, et al.
+Early-warning signals for critical transitions.
+\textit{Nature}. 2009;461(7260):53--59.
+
+\bibitem{dakos2012}
+Dakos V, Carpenter SR, Brock WA, et al.
+Methods for detecting early warnings of critical transitions in time series
+illustrated using simulated ecological data.
+\textit{PLOS ONE}. 2012;7(7):e41010.
+
+\bibitem{olderikkert2016}
+Olde Rikkert MG, Dakos V, Buchman TG, et al.
+Slowing down of recovery as generic risk marker for acute severity transitions
+in chronic diseases.
+\textit{Crit Care Med}. 2016;44(3):601--606.
+
+\bibitem{khalil2025}
+Khalil L, Cliff ERS, Marhoon N, et al.
+Transitions in intensive care: Investigating critical slowing down
+post extubation.
+\textit{PLOS ONE}. 2025;20(1):e0316908.
+DOI: 10.1371/journal.pone.0316908
+
+\bibitem{decastilho2018}
+de Castilho FM, Ribeiro ALP, da Silva JLP, Nobre V, de Sousa MR.
+Heart rate variability as predictor of mortality in sepsis: a prospective
+cohort study.
+\textit{PLOS ONE}. 2018;13(9):e0203487.
+
+\bibitem{carrara2021}
+Carrara M, Laffey JG, Pham T, et al.
+Heart rate variability analysis in critically ill patients: a systematic
+review of methodological and clinical issues.
+\textit{J Clin Monit Comput}. 2021;35(3):619--640.
+DOI: 10.1007/s10877-020-00497-3
+
+\bibitem{moorman2011}
+Moorman JR, Carlo WA, Kattwinkel J, et al.
+Mortality reduction by heart rate characteristic monitoring in very low
+birthweight neonates: a randomized trial.
+\textit{J Pediatr}. 2011;159(6):900--906.
+
+\bibitem{lake2002}
+Lake DE, Richman JS, Griffin MP, Moorman JR.
+Sample entropy analysis of neonatal heart rate variability.
+\textit{Am J Physiol Regul Integr Comp Physiol}. 2002;283(3):R789--R797.
+
+\bibitem{bravi2012}
+Bravi A, Longtin A, Seely AJE.
+Review and classification of variability analysis techniques with clinical
+applications.
+\textit{Biomed Eng Online}. 2012;11:90.
+
+\bibitem{edelsbrunner2010}
+Edelsbrunner H, Harer J.
+\textit{Computational Topology: An Introduction}.
+American Mathematical Society; 2010.
+
+\bibitem{chung2021}
+Chung YM, Hu CS, Lo YL, Wu HT.
+A persistent homology approach to heart rate variability analysis with
+an application to sleep-wake classification.
+\textit{Front Physiol}. 2021;12:637684.
+
+\bibitem{johnson2023}
+Johnson AEW, Bulgarelli L, Shen L, et al.
+MIMIC-IV, a freely accessible electronic health record dataset.
+\textit{Sci Data}. 2023;10:1.
+
+\bibitem{fang2026}
+Fang C, Yu H, Luo Q.
+Heart rate lag-1 autocorrelation is associated with pre-shock dynamics
+in late-onset septic shock: a single-cohort exploratory analysis of MIMIC-IV.
+\textit{[Journal]}. 2026 [under review].
+
+\bibitem{liang1986}
+Liang KY, Zeger SL.
+Longitudinal data analysis using generalized linear models.
+\textit{Biometrika}. 1986;73(1):13--22.
+
+\bibitem{pollard2018}
+Pollard TJ, Johnson AEW, Raffa JD, Celi LA, Mark RG, Badawi O.
+The eICU Collaborative Research Database, a freely available
+multi-center database for critical care research.
+\textit{Sci Data}. 2018;5:180178.
+DOI: 10.1038/sdata.2018.178
+
+\bibitem{richman2000}
+Richman JS, Moorman JR.
+Physiological time-series analysis using approximate entropy and sample
+entropy.
+\textit{Am J Physiol Heart Circ Physiol}. 2000;278(6):H2039--H2049.
+
+\end{thebibliography}
+
+\end{document}

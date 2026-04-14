@@ -1,5 +1,11 @@
+# ── PhysioNet downloaded files (index pages, waveform records) ──
+physionet.org/
+
 # ── MIMIC-IV raw data (PhysioNet DUA — do not redistribute) ──
 mimiciv/
+
+# ── eICU raw data (PhysioNet DUA — do not redistribute) ──
+eicu-crd/
 
 # ── Derived patient-level data (still under DUA) ──
 data/
@@ -19,6 +25,9 @@ ac1/report.pdf
 ac1/report_zh.*
 ac1/manuscript_*.zip
 meeting/
+
+# ── eICU validation sub-project: generated outputs (not for main repo) ──
+eicu_validation/output/
 
 # ── Euler EWS sub-project: generated outputs and compiled PDFs (not for main repo) ──
 euler_ews/output/
