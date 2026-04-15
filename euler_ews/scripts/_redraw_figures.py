@@ -40,11 +40,12 @@ def fmt_p(p: float) -> str:
 def draw_euler_vs_ac1(path: Path) -> None:
     """
     Side-by-side forest plot: Euler χ(0) (left) vs HR AC1 (right).
-    Data from tbl_euler_logistic.csv (Euler) and tbl_sampen_logistic.csv (AC1).
-    AC1 S3 and S5 are hard-coded from manuscript (not saved in CSV).
+    Data from tbl_euler_logistic.csv (Euler) and tbl_ac1_logistic.csv (AC1).
+    tbl_ac1_logistic.csv is written by 11_euler_logistic.py and contains all
+    five AC1 sensitivity models (M1, S1, S2, S3, S5).
     """
     euler_csv = pd.read_csv(OUTPUT_DIR / "tbl_euler_logistic.csv")
-    sampen_csv = pd.read_csv(OUTPUT_DIR / "tbl_sampen_logistic.csv")
+    ac1_csv   = pd.read_csv(OUTPUT_DIR / "tbl_ac1_logistic.csv")
 
     # Euler rows (rename old Chinese column names if present)
     col_map = {"模型": "Model", "主预测变量": "Predictor"}
@@ -60,23 +61,16 @@ def draw_euler_vs_ac1(path: Path) -> None:
         elif pred == "euler_hr_early_mean":
             euler_rows.append((model, r["OR"], r["CI_lo"], r["CI_hi"], r["P"]))
 
-    # AC1 rows from sampen CSV (M1/S1/S2 available)
-    ac1_sampen = sampen_csv[sampen_csv["Metric"] == "AC1"].copy()
-    ac1_model_map = {"M1": "M1 Base model", "S1": "S1 +late HR mean",
-                     "S2": "S2 +late HR+MAP means"}
-    ac1_rows = []
-    for _, r in ac1_sampen.iterrows():
-        lbl = ac1_model_map.get(r["Model"], r["Model"])
-        ac1_rows.append((lbl, r["OR"], r["CI_lo"], r["CI_hi"], r["P"]))
-
-    # Append S3 and S5 from manuscript values (hard-coded, exact published results)
-    ac1_rows.append(("S3 Early window",         1.11, 0.73, 1.69, 0.618))
-    ac1_rows.append(("S5 No-sedation subgroup",  1.07, 0.59, 1.95, 0.815))
-    # Sort to match Euler order: M1, S1, S2, S3, S5
+    # AC1 rows from tbl_ac1_logistic.csv (all five models, no hard-coding)
     order = ["M1 Base model", "S1 +late HR mean", "S2 +late HR+MAP means",
              "S3 Early window", "S5 No-sedation subgroup"]
-    ac1_dict = {lbl: (o, lo, hi, p) for lbl, o, lo, hi, p in ac1_rows}
-    ac1_rows = [(lbl, *ac1_dict[lbl]) for lbl in order if lbl in ac1_dict]
+    ac1_rows = []
+    for lbl in order:
+        sub = ac1_csv[ac1_csv["Model"] == lbl]
+        if sub.empty:
+            continue
+        r = sub.iloc[0]
+        ac1_rows.append((lbl, r["OR"], r["CI_lo"], r["CI_hi"], r["P"]))
 
     n = max(len(euler_rows), len(ac1_rows))
     fig, axes = plt.subplots(1, 2, figsize=(14, 0.65 * n + 2.2), sharey=True)

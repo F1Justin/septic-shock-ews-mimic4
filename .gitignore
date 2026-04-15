@@ -51,6 +51,10 @@ euler_ews/manuscript/*.out
 *.vrb
 *.run.xml
 
+# ── Merged manuscript: track tex/bib/figures; ignore build artifacts ──
+# (build artifacts already caught by global *.aux, *.log etc. patterns below)
+merged_manuscript/*.pdf
+
 # ── Other regenerated or draft files ──
 cover_letter.pdf
 strobe_checklist.pdf

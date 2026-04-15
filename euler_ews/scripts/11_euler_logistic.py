@@ -572,6 +572,32 @@ def main() -> None:
     print_result(ac1_s3, "ac1_hr_early_mean", "AC1 S3 early")
     print_result(ac1_s5, "ac1_hr_late_mean",  "AC1 S5 no-sed")
 
+    # ── AC1 sensitivity results → CSV（供 _redraw_figures.py 读取，避免硬编码）────
+    ac1_sens_rows = []
+    for label, pred_col, result_df in [
+        ("M1 Base model",           "ac1_hr_late_mean",  ac1_m1),
+        ("S1 +late HR mean",        "ac1_hr_late_mean",  ac1_s1),
+        ("S2 +late HR+MAP means",   "ac1_hr_late_mean",  ac1_s2),
+        ("S3 Early window",         "ac1_hr_early_mean", ac1_s3),
+        ("S5 No-sedation subgroup", "ac1_hr_late_mean",  ac1_s5),
+    ]:
+        row = result_df[result_df["Variable"] == pred_col].iloc[0]
+        ac1_sens_rows.append({
+            "Model":    label,
+            "Predictor": pred_col,
+            "N_obs":    int(row["N_obs"]),
+            "N_strata": int(row["N_strata"]),
+            "OR":       row["OR"],
+            "CI_lo":    row["CI_lo"],
+            "CI_hi":    row["CI_hi"],
+            "P":        row["P"],
+            "OR_fmt":   fmt_or(row["OR"], row["CI_lo"], row["CI_hi"]),
+            "P_fmt":    fmt_p(row["P"]),
+        })
+    ac1_sens_df = pd.DataFrame(ac1_sens_rows)
+    ac1_sens_df.to_csv(OUTPUT_DIR / "tbl_ac1_logistic.csv", index=False, encoding="utf-8-sig")
+    print("  → tbl_ac1_logistic.csv saved")
+
     # ── 8. 图表 ───────────────────────────────────────────────────────────────
     print("\n── 出图 ─────────────────────────────────────────────────────────")
 

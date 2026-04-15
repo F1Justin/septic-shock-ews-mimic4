@@ -60,7 +60,30 @@ LATE_WINDOW_LO = -12
 LATE_WINDOW_HI = 0
 
 COLORS = {"shock": "#d62728", "control": "#1f77b4"}
-sns.set_theme(style="whitegrid", font_scale=1.05)
+matplotlib.rcParams.update({
+    "font.family":        "sans-serif",
+    "font.sans-serif":    ["Helvetica Neue", "Helvetica", "Arial", "DejaVu Sans"],
+    "font.size":          10,
+    "axes.labelsize":     10,
+    "axes.titlesize":     11,
+    "xtick.labelsize":    9,
+    "ytick.labelsize":    9,
+    "legend.fontsize":    9,
+    "axes.spines.top":    False,
+    "axes.spines.right":  False,
+    "axes.linewidth":     0.7,
+    "xtick.major.width":  0.7,
+    "ytick.major.width":  0.7,
+    "xtick.major.size":   3.5,
+    "ytick.major.size":   3.5,
+    "grid.color":         "#D8D8D8",
+    "grid.linewidth":     0.8,
+    "grid.alpha":         1.0,
+    "figure.facecolor":   "white",
+    "axes.facecolor":     "white",
+    "savefig.facecolor":  "white",
+})
+sns.set_theme(style="whitegrid", font_scale=1.0)
 
 
 def tagged_path(path: Path, tag: str) -> Path:
@@ -342,7 +365,14 @@ def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
 
     agg_map = agg("var_map", "low_conf_map")
     agg_hr = agg("ac1_hr", "low_conf_hr")
-    fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+    fig, axes = plt.subplots(2, 1, figsize=(10.5, 5.8), sharex=True)
+    fig.suptitle(
+        r"CSD-derived indicators from $-48$ to $0$ h relative to $T_0$",
+        fontsize=11,
+        fontweight="bold",
+        color="#2C2C2C",
+        y=0.99,
+    )
 
     for ax, agg_df, ylabel in [
         (axes[0], agg_map, "MAP variance (residual)"),
@@ -367,18 +397,20 @@ def fig1_timeseries(windows_df: pd.DataFrame, path: Path) -> None:
                 linewidth=2.5,
                 label=f"{grp} (LOESS)",
             )
-        ax.axvline(0, color="grey", linestyle="--", linewidth=1.2)
-        ax.axvline(EARLY_WINDOW_HI, color="green", linestyle=":", linewidth=1.2, alpha=0.9)
-        ax.axvline(LATE_WINDOW_LO, color="orange", linestyle=":", linewidth=1.2, alpha=0.9)
+        ax.axvline(0, color="#BDBDBD", linestyle="--", linewidth=1.0)
+        ax.axvline(EARLY_WINDOW_HI, color="#27AE60", linestyle=":", linewidth=1.4, alpha=0.9)
+        ax.axvline(LATE_WINDOW_LO, color="#E67E22", linestyle=":", linewidth=1.4, alpha=0.9)
         ax.set_ylabel(ylabel, fontsize=10)
+        ax.spines["left"].set_color("#BBBBBB")
+        ax.spines["bottom"].set_color("#BBBBBB")
 
-    axes[1].set_xlabel("Hours before T0", fontsize=10)
-    axes[0].legend(fontsize=9)
+    axes[1].set_xlabel(r"Hours before $T_0$", fontsize=10)
+    axes[0].legend(frameon=False, ncol=2, loc="upper right")
     # ensure T0 (x=0) and the reference lines at -24 h / -12 h are fully visible
     for ax in axes:
         ax.set_xlim(right=0)
-    plt.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
+    fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"  saved → {path.name}")
 
@@ -389,8 +421,13 @@ def fig2_delta_boxplot(stats_df: pd.DataFrame, path: Path) -> None:
         ("delta_map", "Variance-MAP", "Late − Early\nMAP variance"),
         ("delta_hr",  "AC1-HR",       "Late − Early\nHR AC1"),
     ]
-    fig, axes = plt.subplots(1, 2, figsize=(9, 5))
-    fig.suptitle("Figure 2: Early-to-late indicator change", fontsize=12)
+    fig, axes = plt.subplots(1, 2, figsize=(9.8, 5.4))
+    fig.suptitle(
+        r"Early-to-late change ($\Delta$ = late $-$ early)",
+        fontsize=11,
+        fontweight="bold",
+        y=0.98,
+    )
 
     for ax, (col, title, ylabel) in zip(axes, metrics):
         plot_rows = []
@@ -411,21 +448,38 @@ def fig2_delta_boxplot(stats_df: pd.DataFrame, path: Path) -> None:
             fliersize=2,
             ax=ax,
         )
-        ax.axhline(0, color="grey", linestyle="--", linewidth=0.8)
+        ax.axhline(0, color="#7F8C8D", linestyle="--", linewidth=1.0)
         ax.set_xlabel("Group", fontsize=10)
         ax.set_ylabel(ylabel, fontsize=10)
         ax.set_title(title, fontsize=11)
+        ax.spines["left"].set_color("#BBBBBB")
+        ax.spines["bottom"].set_color("#BBBBBB")
 
-    plt.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"  saved → {path.name}")
 
 
 def figS1_subgroup(windows_df: pd.DataFrame, stats_df: pd.DataFrame, path: Path) -> None:
     """ABP-dominant vs NBP-dominant 亚组时序图。"""
+    from statsmodels.nonparametric.smoothers_lowess import lowess
+
+    def _darken(hex_color: str, factor: float = 0.65) -> str:
+        import colorsys
+        hex_color = hex_color.lstrip("#")
+        r, g, b = (int(hex_color[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
+        h, l, s = colorsys.rgb_to_hls(r, g, b)
+        r2, g2, b2 = colorsys.hls_to_rgb(h, max(0, l * factor), s)
+        return "#{:02x}{:02x}{:02x}".format(int(r2 * 255), int(g2 * 255), int(b2 * 255))
+
     fig, axes = plt.subplots(2, 2, figsize=(14, 7), sharex=True)
-    fig.suptitle("Figure S1: Sensitivity — ABP-dominant vs NBP-dominant", fontsize=13)
+    fig.suptitle(
+        "Monitoring-modality subgroup sensitivity analysis",
+        fontsize=11,
+        fontweight="bold",
+        y=0.98,
+    )
 
     for col_i, src in enumerate(["abp", "nbp"]):
         sids = stats_df[stats_df["dominant_source"] == src][["stay_id", "T0"]]
@@ -444,20 +498,39 @@ def figS1_subgroup(windows_df: pd.DataFrame, stats_df: pd.DataFrame, path: Path)
                 sub = agg[agg["group"] == grp].sort_values("hours_before_T0")
                 if sub.empty:
                     continue
-                x = sub["hours_before_T0"]
-                y = sub["mean"]
-                ci = 1.96 * sub["sem"]
-                ax.plot(x, y, color=COLORS[grp], label=grp, linewidth=1.5)
-                ax.fill_between(x, y - ci, y + ci, color=COLORS[grp], alpha=0.2)
-            ax.axvline(0, color="grey", linestyle="--", linewidth=0.8)
+                x = sub["hours_before_T0"].to_numpy()
+                y = sub["mean"].to_numpy()
+                ci = 1.96 * sub["sem"].to_numpy()
+                ax.plot(
+                    x, y,
+                    color=COLORS[grp],
+                    label=f"{grp.capitalize()} (mean)",
+                    linewidth=1.0,
+                    alpha=0.40,
+                )
+                ax.fill_between(x, y - ci, y + ci, color=COLORS[grp], alpha=0.13)
+                smoothed = lowess(y, x, frac=0.3, return_sorted=True)
+                ax.plot(
+                    smoothed[:, 0],
+                    smoothed[:, 1],
+                    color=_darken(COLORS[grp]),
+                    linewidth=2.2,
+                    label=f"{grp.capitalize()} (LOESS)",
+                )
+            ax.axvline(0, color="#BDBDBD", linestyle="--", linewidth=1.0)
+            ax.axvline(EARLY_WINDOW_HI, color="#27AE60", linestyle=":", linewidth=1.3, alpha=0.9)
+            ax.axvline(LATE_WINDOW_LO, color="#E67E22", linestyle=":", linewidth=1.3, alpha=0.9)
             ax.set_title(f"{src.upper()}-dominant", fontsize=10)
             ax.set_ylabel(ylabel, fontsize=9)
+            ax.spines["left"].set_color("#BBBBBB")
+            ax.spines["bottom"].set_color("#BBBBBB")
+            ax.set_xlim(right=0)
 
-    axes[0][0].legend(fontsize=8)
+    axes[0][0].legend(fontsize=8, frameon=False, ncol=2, loc="upper right")
     for ax in axes[1]:
-        ax.set_xlabel("Hours before T0", fontsize=9)
-    plt.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+        ax.set_xlabel(r"Hours before $T_0$", fontsize=9)
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"  saved → {path.name}")
 

@@ -64,7 +64,30 @@ PERIODS = {
 
 COLORS_PERIOD = {"early": "#2196F3", "late": "#F44336"}
 COLORS_GROUP  = {"shock": "#d62728", "control": "#1f77b4"}
-sns.set_theme(style="whitegrid", font_scale=1.1)
+matplotlib.rcParams.update({
+    "font.family":        "sans-serif",
+    "font.sans-serif":    ["Helvetica Neue", "Helvetica", "Arial", "DejaVu Sans"],
+    "font.size":          10,
+    "axes.labelsize":     10,
+    "axes.titlesize":     11,
+    "xtick.labelsize":    9,
+    "ytick.labelsize":    9,
+    "legend.fontsize":    9,
+    "axes.spines.top":    False,
+    "axes.spines.right":  False,
+    "axes.linewidth":     0.7,
+    "xtick.major.width":  0.7,
+    "ytick.major.width":  0.7,
+    "xtick.major.size":   3.5,
+    "ytick.major.size":   3.5,
+    "grid.color":         "#D8D8D8",
+    "grid.linewidth":     0.8,
+    "grid.alpha":         1.0,
+    "figure.facecolor":   "white",
+    "axes.facecolor":     "white",
+    "savefig.facecolor":  "white",
+})
+sns.set_theme(style="whitegrid", font_scale=1.0)
 
 
 # ── 数据提取 ───────────────────────────────────────────────────────────────────
@@ -469,10 +492,16 @@ def fig3_recovery(events: pd.DataFrame,
     df = pd.DataFrame(aligned)
     df["t_bin"] = (df["t_min"] // 5 * 5).astype(int)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharey=True)
-    fig.suptitle("Figure 3: MAP Recovery after Turn (Exploratory)", fontsize=13)
+    fig, axes = plt.subplots(1, 2, figsize=(12.2, 4.9), sharey=True)
+    fig.suptitle(
+        "MAP recovery after Turn events (exploratory)",
+        fontsize=11,
+        fontweight="bold",
+        color="#2C2C2C",
+        y=0.98,
+    )
 
-    for ax, grp in zip(axes, ["shock", "control"]):
+    for ax_idx, (ax, grp) in enumerate(zip(axes, ["shock", "control"])):
         sub = df[df["group"] == grp]
         for period, color in COLORS_PERIOD.items():
             p_sub = sub[sub["period"] == period]
@@ -484,15 +513,21 @@ def fig3_recovery(events: pd.DataFrame,
             if agg.empty:
                 continue
             x, y, ci = agg["t_bin"], agg["mean"], 1.96 * agg["sem"]
-            ax.plot(x, y, color=color,
-                    label=f"{period} ({PERIODS[period][0]}h to {PERIODS[period][1]}h)",
-                    linewidth=1.8)
-            ax.fill_between(x, y - ci, y + ci, color=color, alpha=0.2)
-        ax.axhline(0, color="grey", linestyle="--", linewidth=0.8)
-        ax.axvline(0, color="grey", linestyle=":", linewidth=0.8)
+            label = "Early (-24 h to -12 h)" if period == "early" else "Late (-6 h to 0 h)"
+            ax.plot(x, y, color=color, label=label, linewidth=2.2)
+            ax.fill_between(x, y - ci, y + ci, color=color, alpha=0.16)
+        ax.axhline(0, color="#7F8C8D", linestyle="--", linewidth=1.0)
+        ax.axvline(0, color="#BDBDBD", linestyle=":", linewidth=1.0)
         ax.set_title(grp.capitalize(), fontsize=11)
         ax.set_xlabel("Minutes after Turn", fontsize=10)
-        ax.legend(fontsize=8)
+        ax.spines["left"].set_color("#BBBBBB")
+        ax.spines["bottom"].set_color("#BBBBBB")
+        ax.text(
+            0.0, 1.10, chr(ord("A") + ax_idx),
+            transform=ax.transAxes,
+            fontsize=14, fontweight="bold",
+            va="top", ha="right", color="#333333",
+        )
 
     axes[0].set_ylabel("MAP deviation from baseline (mmHg)", fontsize=10)
 
@@ -509,14 +544,16 @@ def fig3_recovery(events: pd.DataFrame,
         ax.text(
             0.03, 0.97, p_annotations[grp],
             transform=ax.transAxes,
-            fontsize=7.5,
+            fontsize=7.4,
             verticalalignment="top",
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="white", alpha=0.7),
+            bbox=dict(boxstyle="round,pad=0.28", facecolor="white",
+                      edgecolor="#DDDDDD", linewidth=0.6, alpha=0.88),
         )
 
-    plt.tight_layout()
+    axes[0].legend(frameon=False, loc="upper right", fontsize=8.3)
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"  saved → {path.name}")
 
