@@ -27,6 +27,7 @@
 \usepackage{makecell}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric}
+\usepackage{orcidlink}
 
 \doublespacing
 \linenumbers
@@ -45,19 +46,19 @@
 
 % ── Title block ──────────────────────────────────────────────────
 \title{\textbf{Counting Reversals, Not Trends: Topological Heart Rate
-Complexity as a Mean-Independent Early Warning Signal for Septic Shock}}
+Complexity as a Mean-Independent Early Warning for Septic Shock}}
 
 \author{
-  Chengyi Fang$^{1}$ \and
-  Haiping Yu$^{2,*}$ \and
-  Qiancheng Luo$^{3,*}$
+  Chengyi Fang$^{1,2}$\,\orcidlink{0009-0006-1237-7763} \and
+  Haiping Yu$^{3,*}$\,\orcidlink{0000-0002-3394-2841} \and
+  Qiancheng Luo$^{1,*}$\,\orcidlink{0000-0003-4054-5593}
 }
 
 \date{
-  $^1$Tongji University School of Medicine, Shanghai, China \\
-  $^2$Department of Nursing, Pudong Gongli Hospital,
+  $^1$Department of Critical Care Medicine, Pudong Gongli Hospital,
        Shanghai University of Medicine \& Health Sciences, Shanghai, China \\
-  $^3$Department of Critical Care Medicine, Pudong Gongli Hospital,
+  $^2$Tongji University School of Medicine, Shanghai, China \\
+  $^3$Department of Nursing, Pudong Gongli Hospital,
        Shanghai University of Medicine \& Health Sciences, Shanghai, China \\[6pt]
   $^*$Co-corresponding authors \\[6pt]
   \textbf{Correspondence:}
@@ -65,7 +66,7 @@ Complexity as a Mean-Independent Early Warning Signal for Septic Shock}}
   \textit{Preprint deposited on medRxiv. Not peer-reviewed.} \\[4pt]
   \textbf{Keywords:} critical slowing down, early warning signal, septic shock,
   heart rate variability, topological data analysis, Euler characteristic,
-  oscillatory complexity, autocorrelation, MIMIC-IV, eICU-CRD
+  oscillatory complexity, autocorrelation
 }
 
 % ================================================================
@@ -79,27 +80,27 @@ Complexity as a Mean-Independent Early Warning Signal for Septic Shock}}
 
 \noindent\textbf{Background.}
 Critical slowing down (CSD) theory predicts rising lag-1 autocorrelation
-(AC1) before physiological collapse, yet whether this signal is independent
-of concurrent mean-level vital-sign deterioration has not been rigorously
-tested.
+(AC1) before physiological collapse in septic shock, yet whether this
+signal is independent of concurrent mean-level vital-sign deterioration
+has not been rigorously tested.
 
 \noindent\textbf{Methods.}
-In a 1:2 matched MIMIC-IV discovery cohort (725 septic shock, 1,447 controls)
-with external validation in eICU-CRD (587 matched pairs, 163 hospitals),
-we compared four heart rate (HR) complexity indicators---AC1,
+We studied a 1:2 matched MIMIC-IV discovery cohort (725 septic shock
+patients, 1,447 controls) and an independent eICU-CRD validation cohort
+(587 matched pairs, 163 hospitals).
+Four heart rate (HR) complexity indicators were compared: AC1,
 local-extrema count ($N_{\text{extrema}}$), Euler characteristic
-$\chi_{\text{HR}}(0)$, and sample entropy (SampEn)---within a unified
-conditional logistic framework.
-Each indicator was subjected to a three-tier test: basic association (M1),
+$\chi_{\text{HR}}(0)$, and sample entropy (SampEn).
+Each was subjected to a three-tier test: basic association (M1),
 mean-level independence after adjustment for concurrent mean HR and MAP (S2),
 and multi-centre external validation.
 
 \noindent\textbf{Results.}
-In conditional logistic regression, AC1 was associated with shock in the
-base model (OR\,=\,1.60, 95\,\%\,CI 1.15--2.22; $p=0.005$) but
+In conditional logistic regression, AC1 was associated with septic shock
+in the base model (OR\,=\,1.60, 95\,\%\,CI 1.15--2.22; $p=0.005$) but
 completely lost significance after adjustment for mean HR and MAP
 (OR\,=\,1.23, 0.85--1.78; $p=0.271$).
-In contrast, $N_{\text{extrema}}$ remained unchanged and highly significant
+In contrast, $N_{\text{extrema}}$ remained significant
 across all adjustment levels
 (OR\,=\,0.88 $\to$ 0.88 $\to$ 0.87; all $p<0.001$).
 $\chi_{\text{HR}}(0)$ showed partial attenuation but retained significance
@@ -108,18 +109,18 @@ In an independent eICU-CRD multi-centre cohort (surrogate shock definition;
 587 pairs, 163 hospitals), $N_{\text{extrema}}$ was externally validated
 at $T_0\geq 72$\,h (OR\,=\,0.80, 0.65--0.98; $p=0.034$) and survived
 adjustment for SOFA and APACHE-IVa.
-Direct perturbation-recovery analysis using nursing repositioning events
-confirmed that hourly resolution is insufficient for recovery-curve
-characterisation, supporting the indirect structural-complexity approach.
+Nursing repositioning events were used as natural perturbations.
+Hourly charting resolution precluded direct recovery-curve measurement,
+supporting the indirect structural-complexity approach.
 
 \noindent\textbf{Conclusions.}
-$N_{\text{extrema}}$---a parameter-free count of HR oscillatory reversals---is
+$N_{\text{extrema}}$, a parameter-free count of HR oscillatory reversals, is
 the only indicator that passes all three tiers of testing.
 It captures mean-independent cardiovascular regulatory flexibility,
 is computable in $O(n)$ from routine hourly EHR charting, and generalises
 across ICU databases despite differing shock definitions.
-These findings redirect the search for early-warning signals from
-trend-based to topology-based indicators of oscillatory complexity.
+These findings redirect the search for early warning of septic shock
+from trend-based to topology-based indicators of heart rate complexity.
 
 \end{abstract}
 
@@ -674,7 +675,7 @@ haemodynamic resilience.
 % ================================================================
 \section*{Data Availability}
 MIMIC-IV v3.1 is available at PhysioNet (DOI:~\href{https://doi.org/10.13026/kpb9-mt58}{10.13026/kpb9-mt58}) following completion of required training and data use agreement. eICU-CRD v2.0 is similarly available at PhysioNet \citep{pollard2018}.
-Analysis code will be deposited on GitHub upon publication.
+Analysis code is available at \url{https://github.com/F1Justin/septic-shock-ews-mimic4}.
 
 \section*{Acknowledgements}
 The data used in this study are from MIMIC-IV version~3.1
@@ -685,8 +686,11 @@ and Beth Israel Deaconess Medical Center for making these resources publicly
 available.
 
 \section*{Author Contributions}
-CF: conceptualisation, data curation, formal analysis, writing (original draft).
-HY and QL: conceptualisation, supervision, writing (review and editing), co-corresponding authors.
+C.F.: Conceptualization, Methodology, Software, Formal analysis, Data
+curation, Writing --- original draft, Visualization, Writing --- review \& editing.
+H.Y.: Conceptualization, Supervision, Writing --- review \& editing.
+Q.L.: Validation, Supervision, Writing --- review \& editing.
+All authors read and approved the final manuscript.
 
 \section*{Conflicts of Interest}
 The authors declare no conflicts of interest.
